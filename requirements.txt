@@ -3,3 +3,4 @@ requests
 joblib
 plotly
 scikit-learn
+xgboost
