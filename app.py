@@ -408,23 +408,9 @@ def show_form():
             # # get the class labels
             class_labels = best_model.classes_
 
-            # just easier to hardcode instead of reading something in
-            lookup_classes = {
-                0: 'Full Eviction',
-                1: 'Dismissal',
-                2: 'Conditional Eviction',
-                3: 'No Eviction, Payment Plan',
-                4: 'Abatement',
-                5: 'Relief From Eviction',
-                6: 'Rent Adjustment',
-                7: 'Postponement'
-            }
-            
-            # decode classes
-            decoded_classes = [lookup_classes[i] for i in class_labels]
-
             # # use predict_proba to get probabilities from xgb model (loaded model) on form values
             LOOKUP = json.load(open('data/app-data/encoding-lookup.json', 'r'))
+            lookup_classes = [val for val in LOOKUP['per_column']['case_outcome'].keys() if val != 'Not Stated']
             cols_to_encode = list(LOOKUP['per_column'].keys())
             if "adjudicating_member" in cols_to_encode:
                 cols_to_encode.remove("adjudicating_member")
@@ -464,7 +450,15 @@ def show_form():
             transformed_form_example = selector.transform(encoded_form_data)
             y_test_pred_proba = best_model.predict_proba(transformed_form_example)
 
-            st.write(y_test_pred_proba)
+            predicted_probabilities = {}
+            for label, prob in zip(class_labels, y_test_pred_proba[0]):
+                # Lookup the class name using the label index
+                class_name = lookup_classes[label]
+                # Store the class name and corresponding probability in the dictionary
+                predicted_probabilities[class_name] = prob
+
+            # Print or return the resulting dictionary
+            st.write(predicted_probabilities)
 
             #################################################################################################
 
