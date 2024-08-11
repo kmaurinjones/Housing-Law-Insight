@@ -27,6 +27,7 @@ def init_session_states():
     """Initialize session state variables."""
     st.session_state['form_data_as_model_example'] = st.session_state.get('form_data_as_model_example', None)
     st.session_state['form_data'] = st.session_state.get('form_data', None)
+    st.session_state['model_inference'] = st.session_state.get('session_state', None)
 
 # Initialize session state variables
 init_session_states()
@@ -445,20 +446,20 @@ def show_form():
                     raise ValueError(f"Error with form data at column '{col}' with value '{val}'")
 
             # converting to 2D numpy array -- this is just what's expected by the feature selector
-            st.write(encoded_form_data)
+            # st.write(encoded_form_data)
             encoded_form_data = np.array(encoded_form_data).reshape(1, -1)
             transformed_form_example = selector.transform(encoded_form_data)
             y_test_pred_proba = best_model.predict_proba(transformed_form_example)
 
-            predicted_probabilities = {}
+            st.session_state['model_inference'] = {}
             for label, prob in zip(class_labels, y_test_pred_proba[0]):
                 # Lookup the class name using the label index
                 class_name = lookup_classes[label]
                 # Store the class name and corresponding probability in the dictionary
-                predicted_probabilities[class_name] = prob
+                st.session_state['model_inference'][class_name] = float(prob) # converting from numpy float to python float
 
-            # Print or return the resulting dictionary
-            st.write(predicted_probabilities)
+            # sort the results from most to least likely
+            st.session_state['model_inference'] = dict(sorted(st.session_state['model_inference'].items(), key=lambda item: item[1], reverse=True))
 
             #################################################################################################
 
@@ -466,11 +467,17 @@ def show_form():
 def show_results():
     """App page for displaying the model inference results."""
     st.markdown("## Results")
-    if 'form_data_as_model_example' in st.session_state:
-        data = st.session_state['form_data_as_model_example']
-        st.write(f"PLACEHOLDER TEXT HERE")
-        st.write(data)
-        st.write("Model inference results go here. Placeholder text here.".title())
+
+    # check if model inference has been run
+    if st.session_state.get('model_inference', None):
+        st.write("## Model Inference Results")
+        st.write("The model has made predictions based on the information you provided. Here are the results, and how to interpret them:")
+        st.write("### Case Outcome Predictions")
+
+        # Display the model inference results
+        for outcome, prob in st.session_state['model_inference'].items():
+            st.write(f"* **{outcome}**: {round(prob*100, 4)}")
+
         if st.button("Download Results"):
             st.write("File will be created to download")
     else:
