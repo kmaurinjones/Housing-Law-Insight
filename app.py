@@ -395,7 +395,7 @@ def show_form():
 
             st.write(len(form_data_as_model_example))
 
-            st.write(form_data_as_model_example)
+            # st.write(form_data_as_model_example)
 
             # save example as session state
             st.session_state['form_data_as_model_example'] = form_data_as_model_example
@@ -420,11 +420,8 @@ def show_form():
                 7: 'Postponement'
             }
             
-            st.write(lookup_classes)
-            
             # decode classes
             decoded_classes = [lookup_classes[i] for i in class_labels]
-            st.write(decoded_classes)
 
             # # use predict_proba to get probabilities from xgb model (loaded model) on form values
             LOOKUP = json.load(open('data/app-data/encoding-lookup.json', 'r'))
@@ -443,15 +440,21 @@ def show_form():
                 try:
                     # if the column is in the "global" list ("Not Stated", "Not Applicable", etc.)
                     if val in LOOKUP['global']:
-                        encoded_form_data.append(LOOKUP['global'][val])
+                        encoded_form_data.append(
+                            int(LOOKUP['global'][val])
+                        )
                     
                     # if the column is in the "to be encoded" list
                     elif col in cols_to_encode and val in LOOKUP['per_column'][col]:
-                        encoded_form_data.append(LOOKUP['per_column'][col][val])
+                        encoded_form_data.append(
+                            int(LOOKUP['per_column'][col][val])
+                        )
 
                     # if the column is already encoded at form submission or does not require further encoding
                     else:
-                        encoded_form_data.append(val)
+                        encoded_form_data.append(
+                            int(val)
+                        )
                 except:
                     raise ValueError(f"Error with form data at column '{col}' with value '{val}'")
 
