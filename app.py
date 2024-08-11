@@ -366,8 +366,6 @@ def show_form():
             # # get the class labels
             class_labels = best_model.classes_
 
-            st.write(class_labels)
-
             # just easier to hardcode instead of reading something in
             lookup_classes = {
                 0: 'Full Eviction',
@@ -379,18 +377,28 @@ def show_form():
                 6: 'Rent Adjustment',
                 7: 'Postponement'
             }
+            
+            st.write(lookup_classes)
+            # decode classes
+            decoded_classes = [lookup_classes[i] for i in class_labels]
+            st.write(decoded_classes)
 
             # # use predict_proba to get probabilities from xgb model (loaded model) on form values
             LOOKUP = json.load(open('data/app-data/encoding-lookup.json', 'r'))
+            cols_to_encode = list(LOOKUP['per_column'].keys())
+
+            # difference between the two lists
+            already_encoded_cols = list(set(form_data_as_model_example.keys()) - set(cols_to_encode))
 
             encoded_form_data = []
-            for col, val in form_data_as_model_example.items():
-                if val in LOOKUP['global']:
-                    encoded_form_data.append(LOOKUP['global'][val])
-                elif val in LOOKUP['per_column'][col]:
+            for col, val in form_data_as_model_example.items(): # need to do it in this order
+                # check if col needs to be encoded, if so, encode, else just append the value
+                if col in cols_to_encode:
                     encoded_form_data.append(LOOKUP['per_column'][col][val])
+                elif col in already_encoded_cols:
+                    encoded_form_data.append(val)
                 else:
-                    raise ValueError(f"Value {val} for column {col} not found in lookup table.")
+                    raise ValueError(f"Error with form data at column {col} with value {val}")
 
             transformed_form_example = selector.transform(encoded_form_data)
             y_test_pred_proba = best_model.predict_proba(transformed_form_example)
