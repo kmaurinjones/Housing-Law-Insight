@@ -393,11 +393,12 @@ def show_form():
             encoded_form_data = []
             for col, val in form_data_as_model_example.items(): # need to do it in this order
                 # check if col needs to be encoded, if so, encode, else just append the value
-                if col in cols_to_encode:
-                    encoded_form_data.append(LOOKUP['per_column'][col][val])
-                elif col in already_encoded_cols:
-                    encoded_form_data.append(val)
-                else:
+                try:
+                    if col in cols_to_encode:
+                        encoded_form_data.append(LOOKUP['per_column'][col][val])
+                    elif col in already_encoded_cols:
+                        encoded_form_data.append(val)
+                except:
                     raise ValueError(f"Error with form data at column {col} with value {val}")
 
             transformed_form_example = selector.transform(encoded_form_data)
