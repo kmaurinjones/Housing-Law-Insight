@@ -1,0 +1,667 @@
+[
+    {
+        "column": "adjudicating_member",
+        "definition": "The adjudicating member is the person who presides over the hearing and makes the decision. To respect the anonymity of the adjudicating members on this platform, their names are not provided in this data sample.",
+        "distribution": {
+            "Not stated": 4494,
+            "Adj-Mem-1": 1954,
+            "Adj-Mem-2": 1336,
+            "Adj-Mem-3": 1154,
+            "Adj-Mem-4": 1104,
+            "Adj-Mem-5": 973,
+            "Adj-Mem-6": 967,
+            "Adj-Mem-7": 946,
+            "Adj-Mem-8": 910,
+            "Adj-Mem-9": 750
+        }
+    },
+    {
+        "column": "board_location",
+        "definition": "The location of the Landlord and Tenant Board office where the hearing took place.",
+        "distribution": {
+            "Toronto": 24791,
+            "London": 6706,
+            "Mississauga": 6237,
+            "Hamilton": 5189,
+            "Ottawa": 3936,
+            "Sudbury": 3018,
+            "Whitby": 367,
+            "St. Catharines": 351,
+            "Windsor": 325,
+            "Guelph": 267
+        }
+    },
+    {
+        "column": "landlord_represented",
+        "definition": "Whether the landlord was represented by a representative at the hearing.",
+        "distribution": {
+            "Yes": 37809,
+            "Not stated": 14222,
+            "No": 1326,
+            "Not applicable": 155
+        }
+    },
+    {
+        "column": "landlord_attended_hearing",
+        "definition": "Whether the landlord attended the hearing.",
+        "distribution": {
+            "Yes": 44459,
+            "Not stated": 6566,
+            "No": 2328,
+            "Not applicable": 159
+        }
+    },
+    {
+        "column": "tenant_represented",
+        "definition": "Whether the tenant was represented by a representative at the hearing.",
+        "distribution": {
+            "Not stated": 23592,
+            "No": 18671,
+            "Yes": 9985,
+            "Not applicable": 1264
+        }
+    },
+    {
+        "column": "tenant_attended_hearing",
+        "definition": "Whether the tenant attended the hearing.",
+        "distribution": {
+            "Yes": 28791,
+            "No": 17235,
+            "Not stated": 7208,
+            "Not applicable": 278
+        }
+    },
+    {
+        "column": "landlord_not_for_profit",
+        "definition": "Whether the landlord is a not-for-profit organization.",
+        "distribution": {
+            "Not applicable": 44475,
+            "Not stated": 4650,
+            "No": 2637,
+            "Yes": 1750
+        }
+    },
+    {
+        "column": "tenant_collecting_subsidy",
+        "definition": "Whether the tenant is collecting a subsidy.",
+        "distribution": {
+            "Not stated": 30096,
+            "Not applicable": 19745,
+            "Yes": 1894,
+            "No": 1777
+        }
+    },
+    {
+        "column": "case_outcome",
+        "definition": "The outcome of the case, with 9 possible outcomes.",
+        "distribution": {
+            "Full Eviction": 32455,
+            "Dismissal": 7128,
+            "Conditional Eviction": 4860,
+            "No Eviction, Payment Plan": 4368,
+            "Abatement": 2494,
+            "Relief From Eviction": 1024,
+            "Not Stated": 720,
+            "Rent Adjustment": 412,
+            "Postponement": 51
+        }
+    },
+    {
+        "column": "tenancy_length",
+        "definition": "How long had the tenant had been living at the residence.",
+        "ignore": {"Not stated": 44096},
+        "distribution": {
+            "5": 984,
+            "12": 946,
+            "2": 551,
+            "6": 520,
+            "4": 513,
+            "11": 485,
+            "10": 479,
+            "24": 441,
+            "16": 431
+        }
+    },
+    {
+        "column": "monthly_rent",
+        "definition": "The monthly rent amount.",
+        "ignore": {"Not stated": 27917},
+        "distribution": {
+            "0": 521,
+            "1000": 445,
+            "1200": 428,
+            "1500": 373,
+            "800": 361,
+            "900": 335,
+            "850": 318,
+            "1400": 300,
+            "750": 297
+        }
+    },
+    {
+        "column": "rental_deposit",
+        "definition": "The amount of the rental deposit.",
+        "ignore": {"Not stated": 26938},
+        "distribution": {
+            "0": 4445,
+            "1000": 446,
+            "1200": 376,
+            "1500": 358,
+            "900": 331,
+            "850": 324,
+            "800": 318,
+            "1100": 305,
+            "1300": 293
+        }
+    },
+    {
+        "column": "post_increase_rent",
+        "definition": "If any rent increases occurred, what was the rent after the increase(s)?",
+        "ignore": {"Not stated": 50770},
+        "distribution": {
+            "0": 1064,
+            "1000": 29,
+            "1200": 27,
+            "800": 26,
+            "1600": 24,
+            "1400": 23,
+            "2000": 23,
+            "1500": 23,
+            "1": 21
+        }
+    },
+    {
+        "column": "total_arrears",
+        "definition": "The total amount of arrears.",
+        "ignore": {"Not stated": 19392},
+        "distribution": {
+            "0": 795,
+            "170": 410,
+            "186": 276,
+            "Not applicable": 177,
+            "190": 122,
+            "175": 122,
+            "201": 69,
+            "35000": 60,
+            "3000": 58
+        }
+    },
+    {
+        "column": "arrears_duration",
+        "definition": "Over how many months did the arrears accumulate?",
+        "ignore": {"Not stated": 25240},
+        "distribution": {
+            "2": 2741,
+            "3": 2731,
+            "5": 2710,
+            "1": 2439,
+            "4": 2341,
+            "6": 2034,
+            "9": 1866,
+            "8": 1624,
+            "7": 1603
+        }
+    },
+    {
+        "column": "payment_amount_post_notice",
+        "definition": "If the tenant made a payment on the arrears after the eviction notice was served and/or prior to the hearing, what was the amount of the payment?",
+        "ignore": {"Not stated": 29512},
+        "distribution": {
+            "0": 1626,
+            "Not applicable": 858,
+            "170": 701,
+            "201": 509,
+            "186": 434,
+            "500": 326,
+            "1000": 290,
+            "190": 276,
+            "175": 237
+        }
+    },
+    {
+        "column": "history_of_arrears",
+        "definition": "Did the decision mention a history of arrears by the tenant separate from the arrears in the current claim (more than one period of arrears, recurrently coming in and out of arrears, arrears with previous landlord, etc.)?",
+        "distribution": {
+            "Yes": 30038,
+            "Not stated": 20042,
+            "No": 3426,
+            "Not applicable": 6
+        }
+    },
+    {
+        "column": "history_of_arrears_payments",
+        "definition": "Did the decision mention a history of arrears payments by the tenant separate from the arrears in the current claim (partial payments, full payments, etc.)?",
+        "distribution": {
+            "Not stated": 36454,
+            "Yes": 10181,
+            "No": 6868,
+            "Not applicable": 9
+        }
+    },
+    {
+        "column": "frequency_of_late_payments",
+        "definition": "How frequently were rent payments made late?",
+        "distribution": {
+            "Not stated": 48129,
+            "Yes": 5325,
+            "No": 50,
+            "Not applicable": 8
+        }
+    },
+    {
+        "column": "tenant_chose_not_to_pay",
+        "definition": "Did the member find the tenant had or seemed to have the ability to pay rent, but chose not do so?",
+        "distribution": {
+            "Not stated": 41105,
+            "Yes": 10318,
+            "No": 2072,
+            "Not applicable": 17
+        }
+    },
+    {
+        "column": "tenant_conditions",
+        "definition": "What were the specific mental, medical, or physical conditions of the tenant, if any?",
+        "distribution": {
+            "Not Stated": 52195,
+            "Mental Health Issues": 602,
+            "Chronic Illnesses": 347,
+            "Physical Disabilities": 204,
+            "Other": 67,
+            "Employment and Financial Issues": 43,
+            "Not Applicable": 21,
+            "Access to Healthcare": 18,
+            "Environmental and Housing Issues": 9,
+            "Family and Dependent Care": 6
+        }
+    },
+    {
+        "column": "tenant_has_children",
+        "definition": "Whether the tenant has children.",
+        "distribution": {
+            "Not stated": 49021,
+            "Yes": 3800,
+            "No": 595,
+            "Not applicable": 96
+        }
+    },
+    {
+        "column": "total_children",
+        "definition": "The total number of children in the household.",
+        "ignore": {"Not stated": 50152},
+        "distribution": {
+            "1": 1340,
+            "2": 832,
+            "3": 424,
+            "0": 282,
+            "4": 219,
+            "Not applicable": 118,
+            "5": 95,
+            "6": 28,
+            "7": 8
+        }
+    },
+    {
+        "column": "children_under_18",
+        "definition": "The total number of children aged 17 or younger in the household.",
+        "ignore": {"Not stated": 50320},
+        "distribution": {
+            "1": 1357,
+            "2": 804,
+            "3": 385,
+            "0": 274,
+            "4": 173,
+            "Not applicable": 122,
+            "5": 55,
+            "6": 16,
+            "8": 3
+        }
+    },
+    {
+        "column": "children_under_14",
+        "definition": "The total number of children aged 13 or younger in the household.",
+        "ignore": {"Not stated": 52100},
+        "distribution": {
+            "1": 605,
+            "2": 300,
+            "0": 278,
+            "Not applicable": 127,
+            "3": 80,
+            "4": 17,
+            "5": 3,
+            "6": 2
+        }
+    },
+    {
+        "column": "children_under_5",
+        "definition": "The total number of children aged 4 or younger in the household.",
+        "ignore": {"Not stated": 52310},
+        "distribution": {
+            "1": 637,
+            "0": 319,
+            "Not applicable": 134,
+            "2": 89,
+            "3": 13,
+            "4": 8,
+            "5": 2
+        }
+    },
+    {
+        "column": "children_with_conditions",
+        "definition": "Whether the decision stated any of the children had mental, medical or physical conditions.",
+        "distribution": {
+            "Not stated": 52830,
+            "Yes": 347,
+            "Not applicable": 313,
+            "No": 22
+        }
+    },
+    {
+        "column": "conditions_impact_on_moving",
+        "definition": "If the children have conditions, how would moving impact their health?",
+        "distribution": {
+            "Not stated": 51949,
+            "Yes": 1398,
+            "Not applicable": 155,
+            "No": 10
+        }
+    },
+    {
+        "column": "tenant_employed",
+        "definition": "Whether the tenant is employed.",
+        "distribution": {
+            "Not stated": 50138,
+            "Yes": 1830,
+            "No": 1544
+        }
+    },
+    {
+        "column": "tenant_receiving_assistance",
+        "definition": "Whether the tenant was receiving any form of government assistance (e.g. OW, childcare benefits, ODSP, OSAP)?",
+        "distribution": {
+            "Not stated": 50362,
+            "Yes": 2016,
+            "No": 1054,
+            "Not applicable": 80
+        }
+    },
+    {
+        "column": "employment_stability_concerns",
+        "definition": "If the tenant was employed, did the decision state any doubts about the stability of employment e.g. lack of guaranteed hours, contract work, etc.?",
+        "distribution": {
+            "Not stated": 51965,
+            "Yes": 1430,
+            "No": 117
+        }
+    },
+    {
+        "column": "tenant_had_sufficient_income",
+        "distribution": {
+            "Not stated": 50671,
+            "No": 2087,
+            "Yes": 754
+        }
+    },
+    {
+        "column": "household_income",
+        "definition": "The monthly household income of the tenant(s).",
+        "ignore": {"Not stated": 53094},
+        "distribution": {
+            "3000": 24,
+            "4000": 15,
+            "2000": 14,
+            "1200": 12,
+            "1500": 11,
+            "2200": 10,
+            "2500": 10,
+            "2600": 9,
+            "1600": 9
+        }
+    },
+    {
+        "column": "tenant_job_loss_during_period",
+        "definition": "Did the decision mention the tenant lost their job leading up to or during the period of the hearing?",
+        "distribution": {
+            "Not stated": 51555,
+            "Yes": 1686,
+            "No": 268,
+            "Not applicable": 3
+        }
+    },
+    {
+        "column": "other_extenuating_circumstances",
+        "definition": "Did the decision mention any other extenuating circumstances experienced by the tenant leading up to or during the period of the claim (e.g. hospitalization, death in the family, etc.)?",
+        "distribution": {
+            "Not applicable": 49671,
+            "Health Issues": 2467,
+            "Employment and Financial Issues": 1233,
+            "Family and Life Events": 92,
+            "Housing Conditions and Disputes": 48,
+            "Legal and Administrative Issues": 1
+        }
+    },
+    {
+        "column": "payment_plan_proposed",
+        "definition": "Did the tenant propose a payment plan?",
+        "distribution": {
+            "Not stated": 41384,
+            "Yes": 5792,
+            "Not applicable": 5371,
+            "No": 965
+        }
+    },
+    {
+        "column": "payment_plan_accepted",
+        "definition": "If the tenant(s) proposed a payment plan, was the payment plan accepted?",
+        "distribution": {
+            "Not stated": 42992,
+            "Not applicable": 5848,
+            "Yes": 3679,
+            "No": 993
+        }
+    },
+    {
+        "column": "payment_plan_length",
+        "definition": "If a payment plan was accepted, what was the length of the payment plan?",
+        "ignore": {"Not stated": 50697},
+        "distribution": {
+            "12": 987,
+            "6": 263,
+            "3": 162,
+            "2": 161,
+            "4": 160,
+            "5": 152,
+            "8": 105,
+            "1": 102,
+            "10": 88
+        }
+    },
+    {
+        "column": "difficulty_finding_housing",
+        "definition": "Did the decision mention the tenant's difficulty finding alternative housing for any reason e.g.physical limitations, reliance on social assistance, etc.?",
+        "distribution": {
+            "Not stated": 51538,
+            "Yes": 1953,
+            "No": 14,
+            "Not applicable": 7
+        }
+    },
+    {
+        "column": "reasons_for_housing_difficulty",
+        "definition": "If yes to the previous question, were any specific reasons mentioned?",
+        "distribution": {
+            "Not stated": 53371,
+            "Yes": 134,
+            "Not applicable": 7
+        }
+    },
+    {
+        "column": "tenant_given_prior_notice",
+        "definition": "Did the tenant receive prior notice of the eviction?",
+        "distribution": {
+            "Not stated": 27900,
+            "Yes": 25428,
+            "No": 181,
+            "Not applicable": 3
+        }
+    },
+    {
+        "column": "notice_duration",
+        "definition": "How many days notice was given to the tenant?",
+        "ignore": {"Not stated": 51139},
+        "distribution": {
+            "1": 719,
+            "2": 450,
+            "0": 187,
+            "3": 142,
+            "11": 136,
+            "7": 135,
+            "6": 108,
+            "4": 86
+        }
+    },
+    {
+        "column": "postponement_leads_to_arrears",
+        "definition": "Did the decisions state postponement would result in the tenant accruing additional arrears?",
+        "distribution": {
+            "Not stated": 49977,
+            "Yes": 3359,
+            "No": 168,
+            "Not applicable": 8
+        }
+    },
+    {
+        "column": "hearing_date_present",
+        "definition": "Whether a hearing date was mentioned in the decision. 0 = No, 1 = Yes.",
+        "distribution": {
+            "1": 49691,
+            "0": 3821
+        }
+    },
+    {
+        "column": "hearing_date_month",
+        "definition": "The calendar month of the hearing date.",
+        "ignore": {"Not stated": 3821},
+        "distribution": {
+            "1": 6270,
+            "6": 4975,
+            "2": 4796,
+            "11": 4320,
+            "7": 4177,
+            "12": 4173,
+            "10": 3966,
+            "9": 3906,
+            "8": 3759
+        }
+    },
+    {
+        "column": "hearing_date_day",
+        "definition": "The calendar month day of the hearing date.",
+        "ignore": {"Not stated": 3821},
+        "distribution": {
+            "20": 2065,
+            "8": 1964,
+            "10": 1857,
+            "1": 1839,
+            "6": 1799,
+            "7": 1780,
+            "17": 1764,
+            "18": 1750,
+            "21": 1712
+        }
+    },
+    {
+        "column": "hearing_date_year",
+        "definition": "The calendar year of the hearing date.",
+        "ignore": {"Not stated": 3821},
+        "distribution": {
+            "2021": 13078,
+            "2022": 5171,
+            "2020": 5069,
+            "2012": 4862,
+            "2010": 4726,
+            "2011": 4200,
+            "2017": 2369,
+            "2016": 2017,
+            "2018": 1949
+        }
+    },
+    {
+        "column": "decision_date_present",
+        "definition": "Whether a decision date was mentioned in the decision. 0 = No, 1 = Yes.",
+        "distribution": {
+            "1": 53512
+        }
+    },
+    {
+        "column": "decision_date_month",
+        "definition": "The calendar month of the decision date.",
+        "distribution": {
+            "1": 8622,
+            "2": 6775,
+            "8": 5267,
+            "7": 4524,
+            "10": 4315,
+            "9": 4269,
+            "6": 3783,
+            "3": 3642,
+            "4": 3226,
+            "5": 3149
+        }
+    },
+    {
+        "column": "decision_date_day",
+        "definition": "The calendar month day of the decision date.",
+        "distribution": {
+            "4": 2686,
+            "7": 2238,
+            "5": 2047,
+            "8": 2008,
+            "14": 1986,
+            "11": 1975,
+            "22": 1854,
+            "10": 1850,
+            "13": 1818,
+            "6": 1809
+        }
+    },
+    {
+        "column": "decision_date_year",
+        "definition": "The calendar year of the decision date.",
+        "distribution": {
+            "2021": 13821,
+            "2022": 8842,
+            "2012": 4909,
+            "2010": 4696,
+            "2020": 4467,
+            "2011": 4230,
+            "2017": 2428,
+            "2016": 2029,
+            "2018": 1962,
+            "2009": 1745
+        }
+    },
+    {
+        "column": "hearing-decision_difference",
+        "definition": "If both a hearing date and decision date were mentioned in the case, this value represents the difference in days between the hearing date and the decision date.",
+        "ignore": {"Not stated": 3840},
+        "distribution": {
+            "1": 4461,
+            "7": 3544,
+            "0": 3192,
+            "2": 2855,
+            "6": 2466,
+            "4": 2122,
+            "14": 2059,
+            "3": 2031,
+            "8": 1971
+        }
+    },
+    {
+        "column": "rent_increase_date_present",
+        "definition": "Whether a rent increase was mentioned in the decision. 0 = No, 1 = Yes.",
+        "distribution": {
+            "0": 52357,
+            "1": 1155
+        }
+    }
+]
