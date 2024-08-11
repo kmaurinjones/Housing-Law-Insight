@@ -5,6 +5,7 @@ import joblib
 from datetime import datetime
 from io import BytesIO
 import streamlit as st
+import numpy as np
 import plotly.graph_objects as go
 
 # func to get current datetime
@@ -379,10 +380,10 @@ def show_form():
                 col_order = f.read().splitlines()
             # st.write(col_order)
 
-            application_cols = {col: False for col in col_order if "__application_present" in col}
+            application_cols = {col: "false" for col in col_order if "__application_present" in col}
             # update mentioned applications with True
             for app in extracted_applications:
-                application_cols[f"{app}__application_present"] = True
+                application_cols[f"{app}__application_present"] = "true"
 
             # st.write(application_cols)
             # order form data into a dict with the same order as col order
@@ -454,6 +455,8 @@ def show_form():
                 except:
                     raise ValueError(f"Error with form data at column '{col}' with value '{val}'")
 
+            # converting to 2D numpy array -- this is just what's expected by the feature selector
+            encoded_form_data = np.array(encoded_form_data).reshape(1, -1)
             transformed_form_example = selector.transform(encoded_form_data)
             y_test_pred_proba = best_model.predict_proba(transformed_form_example)
 
