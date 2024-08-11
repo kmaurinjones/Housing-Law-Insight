@@ -30,8 +30,27 @@ def init_session_states():
 # Initialize session state variables
 init_session_states()
 
+@st.cache_resource
+def load_model_and_selector():
+    """Load the trained model and feature selector from the cloud."""
+    model_url = os.environ.get('MODEL_URL', None)
+    feat_sel_url = os.environ.get('FEATURE_SELECTOR_URL', None)
+
+    # Download and load the model
+    model_response = requests.get(model_url)
+    model_response.raise_for_status()
+    best_model = joblib.load(BytesIO(model_response.content))
+
+    # Download and load the feature selector
+    selector_response = requests.get(feat_sel_url)
+    selector_response.raise_for_status()
+    selector = joblib.load(BytesIO(selector_response.content))
+
+    return best_model, selector
+
 # Function to display the About tab
 def show_about():
+    """App page explaining the project and its goals."""
     # st.markdown("## About this Project")
     st.markdown("## About this Project")
 
@@ -78,6 +97,7 @@ def show_about():
 
 # Function to display the Form tab
 def show_form():
+    """App page for user to fill out the case information form."""
 
     # load an empty, collapsed sidebar
     st.markdown("## Case Information Form")
@@ -341,25 +361,12 @@ def show_form():
             ########################### run trained model on submitted form data ###########################
 
             #### Placeholder for model inference results ####
-
-            model_url = os.environ.get('MODEL_URL', None)
-            feat_sel_url = os.environ.get('FEATURE_SELECTOR_URL', None)
-
-            # Download and load the model
-            model_response = requests.get(model_url)
-            model_response.raise_for_status()  # Ensure the request was successful
-            best_model = joblib.load(BytesIO(model_response.content))
-
-            # Download and load the feature selector
-            selector_response = requests.get(feat_sel_url)
-            selector_response.raise_for_status()  # Ensure the request was successful
-            selector = joblib.load(BytesIO(selector_response.content))
-
-            # best_model = joblib.load('model-best.joblib')
-            # selector = joblib.load('model-feature-selector.joblib')
+            best_model, selector = load_model_and_selector()
 
             # # get the class labels
             class_labels = best_model.classes_
+
+            st.write(class_labels)
 
             # just easier to hardcode instead of reading something in
             lookup_classes = {
@@ -394,6 +401,7 @@ def show_form():
 
 # Function to display the Results tab
 def show_results():
+    """App page for displaying the model inference results."""
     st.markdown("## Results")
     if 'form_data_as_model_example' in st.session_state:
         data = st.session_state['form_data_as_model_example']
@@ -407,6 +415,7 @@ def show_results():
 
 # Function to display the Data Exploration tab
 def show_data_exploration():
+    """App page for exploring the dataset."""
     st.markdown("## Explore the Data")
     st.write("This tab is under construction. Please check back later.")
 
@@ -862,6 +871,7 @@ def show_model_training():
 
 # Function to show the data exploration page
 def show_data_exploration():
+    """Function to show the data exploration page."""
     st.markdown("## Explore the Data")
 
     # st.divider()
@@ -893,10 +903,12 @@ def show_data_exploration():
 
     # Function to format column names for display
     def format_column_name(column_name):
+        """Function to format column names for display."""
         return column_name.replace('_', ' ').title()
 
     # Function to plot categorical data
     def plot_categorical(column_name, distribution):
+        """Function to plot categorical data."""
         labels, values = zip(*distribution.items())
         fig = go.Figure(data=[go.Bar(x=labels, y=values)])
         fig.update_layout(
@@ -908,6 +920,7 @@ def show_data_exploration():
 
     # Function to plot numerical data
     def plot_numerical(column_name, distribution):
+        """Function to plot numerical data."""
         labels, values = zip(*distribution.items())
         fig = go.Figure(data=[go.Scatter(x=labels, y=values, mode='markers')])
         fig.update_layout(
@@ -967,6 +980,7 @@ def show_data_exploration():
             st.divider()
 
 def main():
+    """Main function for the Streamlit app."""
     tabs_labels = ["About", "Form", "Form Results", "Explore the Data", "Model Training"]
     st.sidebar.title("Navigation")
     selected_tab = st.sidebar.radio("Go to", tabs_labels)
