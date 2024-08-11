@@ -2,3 +2,4 @@ streamlit
 requests
 joblib
 plotly
+sklearn
