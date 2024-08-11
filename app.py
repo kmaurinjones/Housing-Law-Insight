@@ -428,8 +428,8 @@ def show_form():
             # # use predict_proba to get probabilities from xgb model (loaded model) on form values
             LOOKUP = json.load(open('data/app-data/encoding-lookup.json', 'r'))
             cols_to_encode = list(LOOKUP['per_column'].keys())
-            if "adjudicating_member" in already_encoded_cols:
-                already_encoded_cols.remove("adjudicating_member")
+            if "adjudicating_member" in cols_to_encode:
+                cols_to_encode.remove("adjudicating_member")
 
             # difference between the two lists
             already_encoded_cols = list(set(form_data_as_model_example.keys()) - set(cols_to_encode))
