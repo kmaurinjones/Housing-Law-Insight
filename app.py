@@ -305,8 +305,6 @@ def show_form():
             help="Please list any application forms mentioned in the case file. For more information on this topic, please visit the [Official Landlord & Tenant Board (LTB) website](https://tribunalsontario.ca/ltb/forms/)"
         )
 
-        st.write(extracted_applications)
-
         submit_button = st.form_submit_button(label='Submit')
         if submit_button:
             st.success("Form submitted successfully! Please proceed to the Results tab.")
@@ -369,34 +367,24 @@ def show_form():
                 'hearing_decision_diff': continuous_cols['hearing_decision_diff'],
                 # 'x_application_present': x_application_present,
             }
-            # st.write(form_data)
 
             # Save form data to session state
             st.session_state['form_data'] = form_data
 
-            # st.write(form_data)
-
             # read in col order from local txt file -- NOTE: THIS EXCLUDES 'case_outcome' COLUMN SINCE TRAINED MODEL DOESN'T TAKE IT AS INPUT
             with open('data/app-data/col_order.txt', 'r') as f:
                 col_order = f.read().splitlines()
-            # st.write(col_order)
 
             application_cols = {col: "false" for col in col_order if "__application_present" in col}
             # update mentioned applications with True
             for app in extracted_applications:
                 application_cols[f"{app}__application_present"] = "true"
 
-            # st.write(application_cols)
-            # order form data into a dict with the same order as col order
-            # exclude applications for now
+            # order form data into a dict with the same order as col order, (excluding applications for now)
             form_data_as_model_example = {col: form_data[col] for col in col_order if col not in application_cols}
 
             # add applications to form data
             form_data_as_model_example.update(application_cols)
-
-            st.write(len(form_data_as_model_example))
-
-            # st.write(form_data_as_model_example)
 
             # save example as session state
             st.session_state['form_data_as_model_example'] = form_data_as_model_example
@@ -446,7 +434,6 @@ def show_form():
                     raise ValueError(f"Error with form data at column '{col}' with value '{val}'")
 
             # converting to 2D numpy array -- this is just what's expected by the feature selector
-            # st.write(encoded_form_data)
             encoded_form_data = np.array(encoded_form_data).reshape(1, -1)
             transformed_form_example = selector.transform(encoded_form_data)
             y_test_pred_proba = best_model.predict_proba(transformed_form_example)
@@ -461,15 +448,16 @@ def show_form():
             # sort the results from most to least likely
             st.session_state['model_inference'] = dict(sorted(st.session_state['model_inference'].items(), key=lambda item: item[1], reverse=True))
 
+            st.write(st.session_state['model_inference'])
+
             #################################################################################################
 
 # Function to display the Results tab
 def show_results():
     """App page for displaying the model inference results."""
-    st.markdown("## Results")
-
     # check if model inference has been run
     if st.session_state.get('model_inference', None):
+        st.markdown("## Results")
         st.write("## Model Inference Results")
         st.write("The model has made predictions based on the information you provided. Here are the results, and how to interpret them:")
         st.write("### Case Outcome Predictions")
@@ -481,7 +469,9 @@ def show_results():
         if st.button("Download Results"):
             st.write("File will be created to download")
     else:
-        st.write("Please submit information via the Form tab.")
+        # st.write("Please submit information via the Form tab.")
+        # show streamlit info alert
+        st.info("Please submit information via the Form tab.")
 
 # Function to display the Data Exploration tab
 def show_data_exploration():
