@@ -7,11 +7,16 @@ from io import BytesIO
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
+from fpdf import FPDF
 
 # func to get current datetime
 def get_current_datetime():
-    """Get the current date and time."""
+    """Get the current date and time. Returns YYYY-MM-DD HH:MM:SS."""
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+def get_current_datetime_yyyymmdd():
+    """Get the current date and time. Returns YYYY-MM-DD."""
+    return datetime.now().strftime("%Y-%m-%d")
 
 # config for the app
 st.set_page_config(
@@ -22,6 +27,27 @@ st.set_page_config(
 )
 
 st.title("Housing Law Insight Dashboard :house_with_garden: :judge: :bar_chart:")
+
+def generate_pdf(inference_results):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Add title
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Model Inference Results", 0, 1, 'C')
+    pdf.ln(10)
+    
+    # Add the results
+    pdf.set_font("Arial", size=12)
+    for outcome, prob in inference_results.items():
+        pdf.cell(0, 10, f"{outcome}: {round(prob * 100, 2)}%", 0, 1)
+    
+    # Save PDF to a BytesIO object
+    pdf_output = BytesIO()
+    pdf.output(pdf_output)
+    pdf_output.seek(0)
+    
+    return pdf_output
 
 def init_session_states():
     """Initialize session state variables."""
@@ -455,18 +481,24 @@ def show_form():
 # Function to display the Results tab
 def show_results():
     """App page for displaying the model inference results."""
-    st.write("Session State Contents:", st.session_state)
     if st.session_state.get('model_inference', None):
         st.markdown("## Results")
+        st.divider()
         st.write("## Model Inference Results")
         st.write("The model has made predictions based on the information you provided. Here are the results, and how to interpret them:")
         st.write("### Case Outcome Predictions")
 
         for outcome, prob in st.session_state['model_inference'].items():
-            st.write(f"* **{outcome}**: {round(prob*100, 4)}")
+            st.write(f"* **{outcome}**: {round(prob * 100, 2)}%")
 
         if st.button("Download Results"):
-            st.write("File will be created to download")
+            pdf_output = generate_pdf(st.session_state['model_inference'])
+            st.download_button(
+                label="Download PDF",
+                data=pdf_output,
+                file_name=f"Eviction_Outcome_Predictions-{get_current_datetime_yyyymmdd()}.pdf",
+                mime="application/pdf"
+            )
     else:
         st.info("Please submit information via the Form tab.")
 
