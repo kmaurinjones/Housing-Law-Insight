@@ -456,6 +456,7 @@ def show_form():
                     raise ValueError(f"Error with form data at column '{col}' with value '{val}'")
 
             # converting to 2D numpy array -- this is just what's expected by the feature selector
+            st.write(encoded_form_data)
             encoded_form_data = np.array(encoded_form_data).reshape(1, -1)
             transformed_form_example = selector.transform(encoded_form_data)
             y_test_pred_proba = best_model.predict_proba(transformed_form_example)
