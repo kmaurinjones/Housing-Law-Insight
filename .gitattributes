@@ -1,0 +1,7 @@
+*.joblib filter=lfs diff=lfs merge=lfs -text
+models/pkls/model-feature-selector.pkl filter=lfs diff=lfs merge=lfs -text
+models/joblibs/model-best.joblib filter=lfs diff=lfs merge=lfs -text
+models/joblibs/model-feature-selector.joblib filter=lfs diff=lfs merge=lfs -text
+models/joblibs/*.joblib filter=lfs diff=lfs merge=lfs -text
+models/pkls/*.pkl filter=lfs diff=lfs merge=lfs -text
+*.pkl filter=lfs diff=lfs merge=lfs -text
