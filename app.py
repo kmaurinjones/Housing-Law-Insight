@@ -135,28 +135,69 @@ def show_form():
         'rent_increase_date_present' : "Not Stated", # user can't know this so we'll assume this would be the most common value
     }
 
+    
     with st.form(key='case_info_form'):
+
+        # encodings of the most common adjudicating members per location (that are not "Not stated") -- this doesn't need to be encoded downstream for model usage
+        board_to_member_lookup = {
+            'Barrie': 73,
+            'Belleville': 94,
+            'Bracebridge': 28,
+            'Brantford': 53,
+            'Brockville': 9,
+            'Burlington': 121,
+            'Chatham': 110,
+            'Cobourg': 94,
+            'Cochrane': 78,
+            'Cornwall': 40,
+            'Goderich': 11,
+            'Guelph': 126,
+            'Hamilton': 15,
+            'Hawkesbury': 40,
+            'Kawartha Lakes': 77,
+            'Kingston': 9,
+            'Kitchener': 49,
+            'Lindsay': 94,
+            'London': 11,
+            'Mississauga': 73,
+            'Newmarket': 76,
+            'North Bay': 74,
+            'North York': 59,
+            'Orangeville': 25,
+            'Oshawa': 94,
+            'Ottawa': 9,
+            'Owen Sound': 28,
+            'Pembroke': 9,
+            'Perth': 9,
+            'Peterborough': 32,
+            'Sarnia': 62,
+            'Sault Ste. Marie': 78,
+            'Severn': 97,
+            'Simcoe': 38,
+            'Smiths Falls': 106,
+            'St. Catharines': 53,
+            'St. Thomas': 107,
+            'St.Thomas': 110,
+            'Stratford': 131,
+            'Sudbury': 74,
+            'Thunder Bay': 74,
+            'Timmins': 78,
+            'Toronto': 26,
+            'Waterloo': 110,
+            'Whitby': 32,
+            'Windsor': 70,
+            'Woodstock': 107,
+            'York': 193
+        }
 
         # General Questions
         st.markdown("## General Information")
         board_location = st.selectbox(
             "What is the location of the board?",
-            [
-                'Toronto', 'Hamilton', 'Mississauga', 'Ottawa', 'London',
-                'Burlington', 'Guelph', 'Sudbury', 'Sarnia', 'Windsor',
-                'Belleville', 'Bracebridge', 'Waterloo', 'Kingston', 'Kitchener',
-                'Thunder Bay', 'Barrie', 'Brockville', 'Whitby',
-                'St. Catharines', 'Brantford', 'Peterborough', 'Chatham',
-                'Cornwall', 'Sault Ste. Marie', 'St. Thomas', 'Goderich',
-                'Owen Sound', 'Simcoe', 'Lindsay', 'Oshawa', 'Newmarket',
-                'Stratford', 'Woodstock', 'Kawartha Lakes', 'Pembroke',
-                'Timmins', 'North Bay', 'Richmond Hill', 'Hawkesbury',
-                'Cobourg', 'Cochrane', 'Milton', 'Severn', 'Brampton',
-                'Cambridge', 'York', 'Ajax', 'Listowel', 'Leamington',
-                'Fort Frances', 'Perth', 'North York', 'St.Thomas',
-                'Orangeville', 'Smiths Falls'
-            ]
+            sorted(board_to_member_lookup.keys()),
         )
+
+        adj_mem = board_to_member_lookup[board_location]
 
         cat_common_order_1 = ['Yes', 'No', 'Not Stated', 'Not Applicable']
         cat_common_order_2 = ['Not Applicable', 'No', 'Yes', 'Not Stated']
@@ -269,7 +310,7 @@ def show_form():
             st.success("Form submitted successfully! Please proceed to the Results tab.")
             # Collect form data into a dictionary or use as needed
             form_data = {
-                'adjudicating_member': 'Not Stated', # assumption because user can't know this
+                'adjudicating_member': adj_mem, # assumption because user can't know this
                 'board_location': board_location,
                 'landlord_represented': landlord_represented,
                 'landlord_attended_hearing': landlord_attended_hearing,
@@ -379,6 +420,7 @@ def show_form():
             }
             
             st.write(lookup_classes)
+            
             # decode classes
             decoded_classes = [lookup_classes[i] for i in class_labels]
             st.write(decoded_classes)
@@ -389,6 +431,8 @@ def show_form():
 
             # difference between the two lists
             already_encoded_cols = list(set(form_data_as_model_example.keys()) - set(cols_to_encode))
+            if "adjudicating_member" not in already_encoded_cols:
+                already_encoded_cols.append("adjudicating_member")
 
             encoded_form_data = []
             for col, val in form_data_as_model_example.items(): # need to do it in this order
@@ -399,7 +443,7 @@ def show_form():
                     elif col in already_encoded_cols:
                         encoded_form_data.append(val)
                 except:
-                    raise ValueError(f"Error with form data at column {col} with value {val}")
+                    raise ValueError(f"Error with form data at column '{col}' with value '{val}'")
 
             transformed_form_example = selector.transform(encoded_form_data)
             y_test_pred_proba = best_model.predict_proba(transformed_form_example)
