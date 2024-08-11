@@ -440,13 +440,13 @@ def show_form():
             for col, val in form_data_as_model_example.items(): # need to do it in this order
                 # check if col needs to be encoded, if so, encode, else just append the value
                 try:
-                    # if the column is in the "to be encoded" list
-                    if col in cols_to_encode:
-                        encoded_form_data.append(LOOKUP['per_column'][col][val])
-
                     # if the column is in the "global" list ("Not Stated", "Not Applicable", etc.)
-                    elif val in LOOKUP['global']:
+                    if val in LOOKUP['global']:
                         encoded_form_data.append(LOOKUP['global'][val])
+                    
+                    # if the column is in the "to be encoded" list
+                    elif col in cols_to_encode and val in LOOKUP['per_column'][col]:
+                        encoded_form_data.append(LOOKUP['per_column'][col][val])
 
                     # if the column is already encoded at form submission or does not require further encoding
                     else:
