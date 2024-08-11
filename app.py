@@ -448,29 +448,26 @@ def show_form():
             # sort the results from most to least likely
             st.session_state['model_inference'] = dict(sorted(st.session_state['model_inference'].items(), key=lambda item: item[1], reverse=True))
 
-            st.write(st.session_state['model_inference'])
+            st.write(st.session_state['model_inference']) # this works fine...?
 
             #################################################################################################
 
 # Function to display the Results tab
 def show_results():
     """App page for displaying the model inference results."""
-    # check if model inference has been run
+    st.write("Session State Contents:", st.session_state)
     if st.session_state.get('model_inference', None):
         st.markdown("## Results")
         st.write("## Model Inference Results")
         st.write("The model has made predictions based on the information you provided. Here are the results, and how to interpret them:")
         st.write("### Case Outcome Predictions")
 
-        # Display the model inference results
         for outcome, prob in st.session_state['model_inference'].items():
             st.write(f"* **{outcome}**: {round(prob*100, 4)}")
 
         if st.button("Download Results"):
             st.write("File will be created to download")
     else:
-        # st.write("Please submit information via the Form tab.")
-        # show streamlit info alert
         st.info("Please submit information via the Form tab.")
 
 # Function to display the Data Exploration tab
