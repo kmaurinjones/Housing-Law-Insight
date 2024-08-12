@@ -547,7 +547,7 @@ def show_results():
             results_str += f"  - **{key}**: {round(value*100, 2)}%"
             results_str += "\n"
 
-        pdf_text = "\n\n".join(pdf_sections)
+        pdf_text = "\n\n\n".join(pdf_sections)
         pdf_text = pdf_text.replace("<|RESULTS GO HERE|>", results_str)
 
         # so the user can download the results as a PDF
