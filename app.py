@@ -551,7 +551,7 @@ def show_results():
         pdf_text = pdf_text.replace("<|RESULTS GO HERE|>", results_str)
 
         # so the user can download the results as a PDF
-        pdf_output = generate_pdf()
+        pdf_output = generate_pdf(pdf_text)
         st.download_button(
             label="Download PDF",
             data=pdf_output,
