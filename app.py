@@ -7,7 +7,12 @@ from io import BytesIO
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-from fpdf import FPDF
+# from fpdf import FPDF
+from reportlab.lib.pagesizes import LETTER
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.units import inch
+from reportlab.pdfgen.canvas import Canvas
 
 # func to get current datetime
 def get_current_datetime():
@@ -28,23 +33,53 @@ st.set_page_config(
 
 st.title("Housing Law Insight Dashboard :house_with_garden: :judge: :bar_chart:")
 
+# def generate_pdf(inference_results):
+#     """Generate a PDF report with the model inference results."""
+#     pdf = FPDF()
+#     pdf.add_page()
+    
+#     # Add title
+#     pdf.set_font("Arial", 'B', 16)
+#     pdf.cell(0, 10, "Model Inference Results", 0, 1, 'C')
+#     pdf.ln(10)
+    
+#     # Add the results
+#     pdf.set_font("Arial", size=12)
+#     for outcome, prob in inference_results.items():
+#         pdf.cell(0, 10, f"{outcome}: {round(prob * 100, 2)}%", 0, 1)
+    
+#     # Save PDF to a BytesIO object
+#     pdf_output = BytesIO()
+#     pdf.output(pdf_output)
+#     pdf_output.seek(0)
+    
+#     return pdf_output
+
 def generate_pdf(inference_results):
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Add title
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Model Inference Results", 0, 1, 'C')
-    pdf.ln(10)
-    
-    # Add the results
-    pdf.set_font("Arial", size=12)
-    for outcome, prob in inference_results.items():
-        pdf.cell(0, 10, f"{outcome}: {round(prob * 100, 2)}%", 0, 1)
-    
-    # Save PDF to a BytesIO object
+    """Generate a PDF report with the model inference results using reportlab."""
     pdf_output = BytesIO()
-    pdf.output(pdf_output)
+    
+    # Create a canvas object for the PDF
+    canvas = Canvas(pdf_output, pagesize=LETTER)
+    
+    # Set the font and size for the title
+    canvas.setFont("Helvetica-Bold", 16)
+    canvas.drawString(inch, 10.5 * inch, "Model Inference Results")
+
+    # Set the font for the body text
+    canvas.setFont("Helvetica", 12)
+    
+    # Position cursor lower for the body text
+    text_y_position = 10 * inch
+    for outcome, prob in inference_results.items():
+        result_text = f"{outcome}: {round(prob * 100, 2)}%"
+        canvas.drawString(inch, text_y_position, result_text)
+        text_y_position -= 0.25 * inch
+    
+    # Finalize the PDF
+    canvas.save()
+
+    # Move the pointer to the beginning of the BytesIO object
     pdf_output.seek(0)
     
     return pdf_output
