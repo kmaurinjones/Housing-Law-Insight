@@ -6,7 +6,4 @@ scikit-learn
 xgboost
 numpy
 pdfdocument
-# reportlab
-# pdfkit
-# weasyprint
 markdown2
