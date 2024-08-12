@@ -8,12 +8,14 @@ from io import BytesIO
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-import markdown2
+from markdown2 import markdown
 from reportlab.lib.pagesizes import LETTER
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.enums import TA_LEFT
-from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.units import inch
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
 from reportlab.lib import colors
+from reportlab.lib.enums import TA_LEFT, TA_CENTER
 
 # func to get current datetime
 def get_current_datetime():
@@ -34,35 +36,6 @@ st.set_page_config(
 
 st.title("Housing Law Insight Dashboard :house_with_garden: :judge: :bar_chart:")
 
-# def generate_pdf(inference_results):
-#     """Generate a PDF report with the model inference results using reportlab."""
-#     pdf_output = BytesIO()
-    
-#     # Create a canvas object for the PDF
-#     canvas = Canvas(pdf_output, pagesize=LETTER)
-    
-#     # Set the font and size for the title
-#     canvas.setFont("Helvetica-Bold", 16)
-#     canvas.drawString(inch, 10.5 * inch, "Model Inference Results")
-
-#     # Set the font for the body text
-#     canvas.setFont("Helvetica", 12)
-    
-#     # Position cursor lower for the body text
-#     text_y_position = 10 * inch
-#     for outcome, prob in inference_results.items():
-#         result_text = f"{outcome}: {round(prob * 100, 2)}%"
-#         canvas.drawString(inch, text_y_position, result_text)
-#         text_y_position -= 0.25 * inch
-    
-#     # Finalize the PDF
-#     canvas.save()
-
-#     # Move the pointer to the beginning of the BytesIO object
-#     pdf_output.seek(0)
-    
-#     return pdf_output
-
 def generate_pdf(markdown_content: str):
     """Generate a PDF from a Markdown-formatted string."""
     pdf_output = BytesIO()
@@ -71,18 +44,35 @@ def generate_pdf(markdown_content: str):
     doc = SimpleDocTemplate(pdf_output, pagesize=LETTER)
 
     # Convert Markdown to HTML
-    html_content = markdown2.markdown(markdown_content)
+    html_content = markdown(markdown_content)
 
     # Prepare styles and the story (flowable list)
     styles = getSampleStyleSheet()
-    styles['Normal'].alignment = TA_LEFT
-    styles['Normal'].textColor = colors.black
+    normal_style = styles['Normal']
+    bullet_style = ParagraphStyle(
+        'Bullet',
+        parent=styles['Normal'],
+        bulletIndent=inch * 0.25,
+    )
+
     story = []
 
-    # Convert the HTML to ReportLab Paragraphs
-    for paragraph in html_content.split('\n'):
-        story.append(Paragraph(paragraph, styles['Normal']))
-    
+    # Split the HTML into lines for processing
+    lines = html_content.splitlines()
+
+    for line in lines:
+        if line.strip().startswith('<ul>'):  # Handle unordered lists
+            items = []
+            while line.strip() and not line.strip().endswith('</ul>'):
+                if line.strip().startswith('<li>'):
+                    item = line.replace('<li>', '').replace('</li>', '').strip()
+                    items.append(ListItem(Paragraph(item, normal_style), bullet_style))
+                line = lines.pop(0)
+            story.append(ListFlowable(items, bulletType='bullet'))
+        elif line.strip():  # Regular paragraphs
+            story.append(Paragraph(line, normal_style))
+            story.append(Spacer(1, 0.2 * inch))
+
     # Build the PDF
     doc.build(story)
 
