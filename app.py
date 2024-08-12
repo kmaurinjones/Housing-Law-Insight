@@ -1,4 +1,5 @@
 import os
+from glob import glob
 import requests
 import json
 import joblib
@@ -7,12 +8,12 @@ from io import BytesIO
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-# from fpdf import FPDF
+import markdown2
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.units import inch
-from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib.enums import TA_LEFT
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib import colors
 
 # func to get current datetime
 def get_current_datetime():
@@ -34,50 +35,56 @@ st.set_page_config(
 st.title("Housing Law Insight Dashboard :house_with_garden: :judge: :bar_chart:")
 
 # def generate_pdf(inference_results):
-#     """Generate a PDF report with the model inference results."""
-#     pdf = FPDF()
-#     pdf.add_page()
-    
-#     # Add title
-#     pdf.set_font("Arial", 'B', 16)
-#     pdf.cell(0, 10, "Model Inference Results", 0, 1, 'C')
-#     pdf.ln(10)
-    
-#     # Add the results
-#     pdf.set_font("Arial", size=12)
-#     for outcome, prob in inference_results.items():
-#         pdf.cell(0, 10, f"{outcome}: {round(prob * 100, 2)}%", 0, 1)
-    
-#     # Save PDF to a BytesIO object
+#     """Generate a PDF report with the model inference results using reportlab."""
 #     pdf_output = BytesIO()
-#     pdf.output(pdf_output)
+    
+#     # Create a canvas object for the PDF
+#     canvas = Canvas(pdf_output, pagesize=LETTER)
+    
+#     # Set the font and size for the title
+#     canvas.setFont("Helvetica-Bold", 16)
+#     canvas.drawString(inch, 10.5 * inch, "Model Inference Results")
+
+#     # Set the font for the body text
+#     canvas.setFont("Helvetica", 12)
+    
+#     # Position cursor lower for the body text
+#     text_y_position = 10 * inch
+#     for outcome, prob in inference_results.items():
+#         result_text = f"{outcome}: {round(prob * 100, 2)}%"
+#         canvas.drawString(inch, text_y_position, result_text)
+#         text_y_position -= 0.25 * inch
+    
+#     # Finalize the PDF
+#     canvas.save()
+
+#     # Move the pointer to the beginning of the BytesIO object
 #     pdf_output.seek(0)
     
 #     return pdf_output
 
-def generate_pdf(inference_results):
-    """Generate a PDF report with the model inference results using reportlab."""
+def generate_pdf(markdown_content: str):
+    """Generate a PDF from a Markdown-formatted string."""
     pdf_output = BytesIO()
     
-    # Create a canvas object for the PDF
-    canvas = Canvas(pdf_output, pagesize=LETTER)
-    
-    # Set the font and size for the title
-    canvas.setFont("Helvetica-Bold", 16)
-    canvas.drawString(inch, 10.5 * inch, "Model Inference Results")
+    # Create a document template
+    doc = SimpleDocTemplate(pdf_output, pagesize=LETTER)
 
-    # Set the font for the body text
-    canvas.setFont("Helvetica", 12)
+    # Convert Markdown to HTML
+    html_content = markdown2.markdown(markdown_content)
+
+    # Prepare styles and the story (flowable list)
+    styles = getSampleStyleSheet()
+    styles['Normal'].alignment = TA_LEFT
+    styles['Normal'].textColor = colors.black
+    story = []
+
+    # Convert the HTML to ReportLab Paragraphs
+    for paragraph in html_content.split('\n'):
+        story.append(Paragraph(paragraph, styles['Normal']))
     
-    # Position cursor lower for the body text
-    text_y_position = 10 * inch
-    for outcome, prob in inference_results.items():
-        result_text = f"{outcome}: {round(prob * 100, 2)}%"
-        canvas.drawString(inch, text_y_position, result_text)
-        text_y_position -= 0.25 * inch
-    
-    # Finalize the PDF
-    canvas.save()
+    # Build the PDF
+    doc.build(story)
 
     # Move the pointer to the beginning of the BytesIO object
     pdf_output.seek(0)
@@ -523,17 +530,34 @@ def show_results():
         st.write("The model has made predictions based on the information you provided. Here are the results, and how to interpret them:")
         st.write("### Case Outcome Predictions")
 
-        for outcome, prob in st.session_state['model_inference'].items():
-            st.write(f"* **{outcome}**: {round(prob * 100, 2)}%")
+        # for outcome, prob in st.session_state['model_inference'].items():
+        #     st.write(f"* **{outcome}**: {round(prob * 100, 2)}%")
 
-        if st.button("Download Results"):
-            pdf_output = generate_pdf(st.session_state['model_inference'])
-            st.download_button(
-                label="Download PDF",
-                data=pdf_output,
-                file_name=f"Eviction_Outcome_Predictions-{get_current_datetime_yyyymmdd()}.pdf",
-                mime="application/pdf"
-            )
+        # read in all pdfs from "./pdf-sections/" folder, sorting by filename
+        pdf_files = sorted(glob("./pdf-sections/*.md"))
+
+        # read each file and join the content by newline, then replace the placeholder with the model inference results
+        pdf_sections = []
+        for file in pdf_files:
+            with open(file, 'r') as f:
+                pdf_sections.append(f.read())
+
+        results_str = ""
+        for key, value in st.session_state['model_inference'].items():
+            results_str += f"  - **{key}**: {round(value*100, 2)}%"
+            results_str += "\n"
+
+        pdf_text = "\n\n".join(pdf_sections)
+        pdf_text = pdf_text.replace("<|RESULTS GO HERE|>", results_str)
+
+        # so the user can download the results as a PDF
+        pdf_output = generate_pdf()
+        st.download_button(
+            label="Download PDF",
+            data=pdf_output,
+            file_name=f"Eviction_Outcome_Predictions-{get_current_datetime_yyyymmdd()}.pdf",
+            mime="application/pdf"
+        )
     else:
         st.info("Please submit information via the Form tab.")
 

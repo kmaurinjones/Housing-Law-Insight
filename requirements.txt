@@ -5,5 +5,5 @@ plotly
 scikit-learn
 xgboost
 numpy
-# fpdf
 reportlab
+markdown2
