@@ -9,13 +9,14 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 from markdown2 import markdown
-from reportlab.lib.pagesizes import LETTER
-from reportlab.lib.units import inch
-from reportlab.pdfgen import canvas
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_LEFT, TA_CENTER
+import pdfkit
+# from reportlab.lib.pagesizes import LETTER
+# from reportlab.lib.units import inch
+# from reportlab.pdfgen import canvas
+# from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
+# from reportlab.lib import colors
+# from reportlab.lib.enums import TA_LEFT, TA_CENTER
 
 # func to get current datetime
 def get_current_datetime():
@@ -36,49 +37,63 @@ st.set_page_config(
 
 st.title("Housing Law Insight Dashboard :house_with_garden: :judge: :bar_chart:")
 
+# def generate_pdf(markdown_content: str):
+#     """Generate a PDF from a Markdown-formatted string."""
+#     pdf_output = BytesIO()
+    
+#     # Create a document template
+#     doc = SimpleDocTemplate(pdf_output, pagesize=LETTER)
+
+#     # Convert Markdown to HTML
+#     html_content = markdown(markdown_content)
+
+#     # Prepare styles and the story (flowable list)
+#     styles = getSampleStyleSheet()
+#     normal_style = styles['Normal']
+#     bullet_style = ParagraphStyle(
+#         'Bullet',
+#         parent=styles['Normal'],
+#         bulletIndent=inch * 0.25,
+#     )
+
+#     story = []
+
+#     # Split the HTML into lines for processing
+#     lines = html_content.splitlines()
+
+#     for line in lines:
+#         if line.strip().startswith('<ul>'):  # Handle unordered lists
+#             items = []
+#             while line.strip() and not line.strip().endswith('</ul>'):
+#                 if line.strip().startswith('<li>'):
+#                     item = line.replace('<li>', '').replace('</li>', '').strip()
+#                     items.append(ListItem(Paragraph(item, normal_style), bullet_style))
+#                 line = lines.pop(0)
+#             story.append(ListFlowable(items, bulletType='bullet'))
+#         elif line.strip():  # Regular paragraphs
+#             story.append(Paragraph(line, normal_style))
+#             story.append(Spacer(1, 0.2 * inch))
+
+#     # Build the PDF
+#     doc.build(story)
+
+#     # Move the pointer to the beginning of the BytesIO object
+#     pdf_output.seek(0)
+    
+#     return pdf_output
+
 def generate_pdf(markdown_content: str):
     """Generate a PDF from a Markdown-formatted string."""
-    pdf_output = BytesIO()
-    
-    # Create a document template
-    doc = SimpleDocTemplate(pdf_output, pagesize=LETTER)
-
     # Convert Markdown to HTML
     html_content = markdown(markdown_content)
 
-    # Prepare styles and the story (flowable list)
-    styles = getSampleStyleSheet()
-    normal_style = styles['Normal']
-    bullet_style = ParagraphStyle(
-        'Bullet',
-        parent=styles['Normal'],
-        bulletIndent=inch * 0.25,
-    )
-
-    story = []
-
-    # Split the HTML into lines for processing
-    lines = html_content.splitlines()
-
-    for line in lines:
-        if line.strip().startswith('<ul>'):  # Handle unordered lists
-            items = []
-            while line.strip() and not line.strip().endswith('</ul>'):
-                if line.strip().startswith('<li>'):
-                    item = line.replace('<li>', '').replace('</li>', '').strip()
-                    items.append(ListItem(Paragraph(item, normal_style), bullet_style))
-                line = lines.pop(0)
-            story.append(ListFlowable(items, bulletType='bullet'))
-        elif line.strip():  # Regular paragraphs
-            story.append(Paragraph(line, normal_style))
-            story.append(Spacer(1, 0.2 * inch))
-
-    # Build the PDF
-    doc.build(story)
-
+    # Convert HTML to PDF using pdfkit
+    pdf_output = BytesIO()
+    pdfkit.from_string(html_content, pdf_output, options={"enable-local-file-access": None})
+    
     # Move the pointer to the beginning of the BytesIO object
     pdf_output.seek(0)
-    
+
     return pdf_output
 
 def init_session_states():
