@@ -5,7 +5,8 @@ plotly
 scikit-learn
 xgboost
 numpy
+pdfdocument
 # reportlab
 # pdfkit
-weasyprint
+# weasyprint
 markdown2

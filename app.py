@@ -9,7 +9,8 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 import markdown2
-from weasyprint import HTML
+from pdfdocument.document import PDFDocument
+# from weasyprint import HTML
 # from reportlab.lib.pagesizes import LETTER
 # from reportlab.lib.units import inch
 # from reportlab.pdfgen import canvas
@@ -96,14 +97,34 @@ st.title("Housing Law Insight Dashboard :house_with_garden: :judge: :bar_chart:"
 
 #     return pdf_output
 
+# def generate_pdf(markdown_content: str):
+#     """Generate a PDF from a Markdown-formatted string."""
+#     # Convert Markdown to HTML
+#     html_content = markdown2.markdown(markdown_content)
+    
+#     # Generate PDF using WeasyPrint
+#     pdf_output = BytesIO()
+#     HTML(string=html_content).write_pdf(pdf_output)
+    
+#     # Move the pointer to the beginning of the BytesIO object
+#     pdf_output.seek(0)
+
+#     return pdf_output
+
 def generate_pdf(markdown_content: str):
     """Generate a PDF from a Markdown-formatted string."""
     # Convert Markdown to HTML
     html_content = markdown2.markdown(markdown_content)
     
-    # Generate PDF using WeasyPrint
+    # Create a PDFDocument
     pdf_output = BytesIO()
-    HTML(string=html_content).write_pdf(pdf_output)
+    pdf = PDFDocument(pdf_output)
+    
+    # Add content to the PDF
+    pdf.init_report()
+    pdf.h1('Housing Law Insight Dashboard')
+    pdf.p(html_content)
+    pdf.generate()
     
     # Move the pointer to the beginning of the BytesIO object
     pdf_output.seek(0)
