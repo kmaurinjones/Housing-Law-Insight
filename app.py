@@ -8,8 +8,8 @@ from io import BytesIO
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-from markdown2 import markdown
-import pdfkit
+import markdown2
+from weasyprint import HTML
 # from reportlab.lib.pagesizes import LETTER
 # from reportlab.lib.units import inch
 # from reportlab.pdfgen import canvas
@@ -82,14 +82,28 @@ st.title("Housing Law Insight Dashboard :house_with_garden: :judge: :bar_chart:"
     
 #     return pdf_output
 
+# def generate_pdf(markdown_content: str):
+#     """Generate a PDF from a Markdown-formatted string."""
+#     # Convert Markdown to HTML
+#     html_content = markdown(markdown_content)
+
+#     # Convert HTML to PDF using pdfkit
+#     pdf_output = BytesIO()
+#     pdfkit.from_string(html_content, pdf_output, options={"enable-local-file-access": None})
+    
+#     # Move the pointer to the beginning of the BytesIO object
+#     pdf_output.seek(0)
+
+#     return pdf_output
+
 def generate_pdf(markdown_content: str):
     """Generate a PDF from a Markdown-formatted string."""
     # Convert Markdown to HTML
-    html_content = markdown(markdown_content)
-
-    # Convert HTML to PDF using pdfkit
+    html_content = markdown2.markdown(markdown_content)
+    
+    # Generate PDF using WeasyPrint
     pdf_output = BytesIO()
-    pdfkit.from_string(html_content, pdf_output, options={"enable-local-file-access": None})
+    HTML(string=html_content).write_pdf(pdf_output)
     
     # Move the pointer to the beginning of the BytesIO object
     pdf_output.seek(0)
