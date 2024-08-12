@@ -487,8 +487,10 @@ def show_results():
         st.write("The model has made predictions based on the information you provided. Here are the results, and how to interpret them:")
         st.write("### Case Outcome Predictions")
 
-        # for outcome, prob in st.session_state['model_inference'].items():
-        #     st.write(f"* **{outcome}**: {round(prob * 100, 2)}%")
+        for outcome, prob in st.session_state['model_inference'].items():
+            st.write(f"* **{outcome}**: {round(prob * 100, 2)}%")
+
+        st.markdown("For more information on the these predictions, including more context for the project and the data that was used to generate these predictions, please refer to the PDF report below.")
 
         # read in all pdfs from "./pdf-sections/" folder, sorting by filename
         pdf_files = sorted(glob("./pdf-sections/*.md"))
