@@ -520,12 +520,6 @@ def show_results():
     else:
         st.info("Please submit information via the Form tab.")
 
-# Function to display the Data Exploration tab
-def show_data_exploration():
-    """App page for exploring the dataset."""
-    st.markdown("## Explore the Data")
-    st.write("This tab is under construction. Please check back later.")
-
 def show_model_training():
     """App page explaining model training process"""
     st.markdown("## Model Training")
@@ -981,23 +975,137 @@ def show_data_exploration():
     """Function to show the data exploration page."""
     st.markdown("## Explore the Data")
 
-    # st.divider()
-
-    data_explore_wr = """
-    On this page, you can explore some of the data extracted from the case files used to train the model in this project.
-    The data includes information about various aspects of the cases, such as the landlord's representation, the tenant's financial situation, and the history of late payments.
-    To respect the anonymity and privacy of the individuals involved in the cases, the data has been anonymized and aggregated to provide a high-level overview of the trends and patterns observed in the dataset.
-
-    Using the **sidebar** *(accessible via the arrow in the top left-hand corner of this page)*, select one or more columns to generate simple graphs using their data.
-    With each column, there is also a definiton of the information in that column to explain how the data was collected from each case and what it represents.
+    ### General Page Info ###
+    data_explore_info = """
+    On this page, you'll find two things:
     
-    The graphs can help to understand the distribution of the data and identify any patterns or trends that may be present.
-    You may even notice some interesting trends that the model has picked up in its learning.
-    
-    **Note: To keep the graphs manageable, for any columns with more than 10 unique values, only the top 10 highest counts are displayed.**
+    1. By reverse engineering the trained model and its learned relationships, we can get a sense of how strongly certain features of each case in the dataset are related to the outcome of the case.
+    2. A section "Graphs", where you can explore some of the data extracted from the case files used to train the model in this project.
     """.replace("    ", "").strip()
 
-    st.markdown(data_explore_wr)
+    st.markdown(data_explore_info)
+
+    ### Most significant model features ###
+    data_explore_features = """
+    ### Inspecting Case Feature Importances
+
+    One major aspect of training a model like the XGBoostClassifier model used in the project, is something called Feature Engineering.
+    A feature is a measurable property of the data that can be used to make predictions, and the model uses these features to learn patterns and relationships in the data to make accurate predictions.
+    An example of a feature from this dataset is whether the location of the Landlord Tenant Board hearing, of which the value can be one of a handful of options - all of which are places in Ontario.
+
+    When training the model, the model learns which features are most important for making accurate predictions, which we can extract from the model and inspect to better understand the relationships between the features and the outcome.
+
+    In the graph below, you can see the importance of each feature in the model, which indicates how strongly each feature is related to the outcome of the case.
+    The higher the importance score, the more important the feature is for making accurate predictions.
+
+    However, as this project has been done as a retrospective analysis, some features cannot practically be known in advance, and we have highlighted these in a separate color in the graph below.
+    """.replace("    ", "").strip()
+
+    st.markdown(data_explore_features)
+
+    ### plotting Model Features Inspection results ###
+    # Data
+    data = {
+        'adjudicating_member': 26419.0,
+        'hearing_decision_diff': 21838.0,
+        'decision_date_day': 21790.0,
+        'hearing_date_day': 19929.0,
+        'total_arrears': 14167.0,
+        'decision_date_month': 13437.0,
+        'hearing_date_month': 12582.0,
+        'monthly_rent': 11084.0,
+        'hearing_date_year': 10801.0,
+        'payment_amount_post_notice': 10386.0,
+        'board_location': 10065.0,
+        'decision_date_year': 9541.0,
+        'rental_deposit': 7301.0,
+        'arrears_duration': 6357.0,
+        'tenancy_length': 5781.0,
+        'tenant_represented': 5629.0,
+        'tenant_collecting_subsidy': 3703.0,
+        'history_of_arrears': 3400.0,
+        'landlord_represented': 3239.0,
+        'payment_plan_proposed': 2578.0,
+        'tenant_attended_hearing': 2320.0,
+        'landlord_not_for_profit': 2074.0,
+        'tenant_given_prior_notice': 1922.0,
+        'payment_plan_accepted': 1755.0,
+        'tenant_chose_not_to_pay': 1637.0,
+        'payment_plan_length': 1558.0,
+        'history_of_arrears_payments': 1549.0,
+        'other_extenuating_circumstances': 1302.0,
+        'post_increase_rent': 1247.0,
+        'landlord_attended_hearing': 1178.0,
+        'total_children': 1039.0,
+        'tenant_has_children': 1031.0,
+        'frequency_of_late_payments': 879.0,
+        'children_under_18': 877.0,
+        'tenant_employed': 871.0,
+        'postponement_leads_to_arrears': 863.0,
+        'T2__application_present': 805.0,
+        'L2__application_present': 787.0,
+        'tenant_receiving_assistance': 736.0,
+        'N5__application_present': 702.0,
+        'tenant_conditions': 696.0,
+        'T6__application_present': 570.0,
+        'N4__application_present': 533.0
+    }
+
+    # Features not known in advance
+    features_not_known_in_advance = [
+        'adjudicating_member',
+        'hearing_decision_diff',
+        'decision_date_day',
+        'hearing_date_day',
+        'decision_date_month',
+        'hearing_date_month',
+        'hearing_date_year',
+        'decision_date_year',
+        'board_location'
+    ]
+
+    # Prepare data for plotting
+    features = [key.replace('_', ' ').title() for key in data.keys()]
+    weights = list(data.values())
+
+    # Color coding for "Retrospective Only" features
+    colors = ['rgba(0, 123, 255, 0.6)' if feature.lower().replace(' ', '_') not in features_not_known_in_advance 
+            else 'rgba(255, 0, 0, 0.6)' for feature in features]
+
+    # Create the plot
+    fig = go.Figure(go.Bar(
+        x=weights,
+        y=features,
+        orientation='h',
+        marker=dict(color=colors),
+    ))
+
+    fig.update_layout(
+        title='Feature Weights',
+        xaxis_title='Importance Score',
+        yaxis_title='Features',
+        height=800,
+        margin=dict(l=200, r=20, t=50, b=50),
+        showlegend=False
+    )
+
+    # Add a legend for the color coding
+    fig.add_trace(go.Scatter(
+        x=[None], y=[None],
+        mode='markers',
+        marker=dict(size=10, color='rgba(0, 123, 255, 0.6)'),
+        name='Known in Advance'
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=[None], y=[None],
+        mode='markers',
+        marker=dict(size=10, color='rgba(255, 0, 0, 0.6)'),
+        name='Retrospective Only'
+    ))
+
+    # Render the plot in Streamlit
+    st.plotly_chart(fig)
 
     st.divider()
 
@@ -1045,10 +1153,6 @@ def show_data_exploration():
             title=dict(text=f"Distribution of {format_column_name(column_name)}", x=0.4)
         )
         st.plotly_chart(fig)
-
-
-    # check that current tab is the "Explore the Data" tab
-    # if st.session_state.current_tab == "Explore the Data":
 
     # Sidebar for selecting the column to plot
     st.sidebar.markdown("## Select Column to Plot")
