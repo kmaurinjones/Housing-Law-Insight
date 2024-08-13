@@ -1063,7 +1063,7 @@ def show_data_exploration():
         'decision_date_year',
         'board_location'
     ]
-
+        
     # Prepare data for plotting
     features = [key.replace('_', ' ').title() for key in data.keys()]
     weights = list(data.values())
@@ -1080,13 +1080,29 @@ def show_data_exploration():
         marker=dict(color=colors),
     ))
 
+    # Update layout to match the style of other plots
     fig.update_layout(
-        title='Feature Weights',
+        title=dict(
+            text='Feature Weights',
+            x=0.5,
+            xanchor='center',
+            font=dict(size=23)
+        ),
         xaxis_title='Importance Score',
         yaxis_title='Features',
+        xaxis=dict(
+            tickvals=[i for i in range(0, int(max(weights)), 5000)] + [int(max(weights))]
+        ),
+        legend=dict(
+            x=0.5,
+            y=1.1,
+            xanchor='center',
+            orientation='h',
+            bgcolor='rgba(255,255,255,0.5)'
+        ),
         height=800,
         margin=dict(l=200, r=20, t=50, b=50),
-        showlegend=False
+        showlegend=True
     )
 
     # Add a legend for the color coding
