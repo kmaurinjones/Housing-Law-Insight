@@ -334,7 +334,7 @@ def show_form():
 
         submit_button = st.form_submit_button(label='Submit')
         if submit_button:
-            st.success("Form submitted successfully! Please proceed to the Results tab.")
+            # st.success("Form submitted successfully, but don't leave just yet! Please wait until the message.")
             # Collect form data into a dictionary or use as needed
             form_data = {
                 'adjudicating_member': adj_mem, # assumption because user can't know this
@@ -474,6 +474,8 @@ def show_form():
 
             # sort the results from most to least likely
             st.session_state['model_inference'] = dict(sorted(st.session_state['model_inference'].items(), key=lambda item: item[1], reverse=True))
+
+            st.success("Form submitted successfully and the model has made its predictions! Please navigate to the 'Form Results' tab to view the predictions.")
 
             #################################################################################################
 
@@ -1003,7 +1005,6 @@ def show_data_exploration():
 
     st.markdown(data_explore_features)
 
-    ### plotting Model Features Inspection results ###
     # Data
     data = {
         'adjudicating_member': 26419.0,
@@ -1063,14 +1064,16 @@ def show_data_exploration():
         'decision_date_year',
         'board_location'
     ]
-        
+
     # Prepare data for plotting
     features = [key.replace('_', ' ').title() for key in data.keys()]
     weights = list(data.values())
 
-    # Color coding for "Retrospective Only" features
-    colors = ['rgba(0, 123, 255, 0.6)' if feature.lower().replace(' ', '_') not in features_not_known_in_advance 
-            else 'rgba(255, 0, 0, 0.6)' for feature in features]
+    # Color coding for features
+    retro_colour = 'rgb(158,202,225)'
+    known_colour = 'rgb(8,48,107)'
+    colors = [retro_colour if feature.lower().replace(' ', '_') not in features_not_known_in_advance 
+            else known_colour for feature in features]
 
     # Create the plot
     fig = go.Figure(go.Bar(
@@ -1078,24 +1081,25 @@ def show_data_exploration():
         y=features,
         orientation='h',
         marker=dict(color=colors),
+        showlegend=False
     ))
 
     # Update layout to match the style of other plots
     fig.update_layout(
         title=dict(
             text='Feature Weights',
-            x=0.5,
+            x=0.5,#65,
             xanchor='center',
             font=dict(size=23)
         ),
         xaxis_title='Importance Score',
-        yaxis_title='Features',
+        yaxis_title='Feature',
         xaxis=dict(
             tickvals=[i for i in range(0, int(max(weights)), 5000)] + [int(max(weights))]
         ),
         legend=dict(
             x=0.5,
-            y=1.1,
+            y=1.0,
             xanchor='center',
             orientation='h',
             bgcolor='rgba(255,255,255,0.5)'
@@ -1109,14 +1113,15 @@ def show_data_exploration():
     fig.add_trace(go.Scatter(
         x=[None], y=[None],
         mode='markers',
-        marker=dict(size=10, color='rgba(0, 123, 255, 0.6)'),
+        marker=dict(size=10, color=retro_colour),
         name='Known in Advance'
     ))
 
     fig.add_trace(go.Scatter(
+        # showlegend=False,
         x=[None], y=[None],
         mode='markers',
-        marker=dict(size=10, color='rgba(255, 0, 0, 0.6)'),
+        marker=dict(size=10, color=known_colour),
         name='Retrospective Only'
     ))
 
