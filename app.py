@@ -55,6 +55,7 @@ def init_session_states():
     st.session_state['form_data_as_model_example'] = st.session_state.get('form_data_as_model_example', None)
     st.session_state['form_data'] = st.session_state.get('form_data', None)
     st.session_state['model_inference'] = st.session_state.get('model_inference', None)
+    st.session_state['pdf_text'] = st.session_state.get('pdf_text', None)
 
 # Initialize session state variables
 init_session_states()
@@ -398,6 +399,8 @@ def show_form():
             # Save form data to session state
             st.session_state['form_data'] = form_data
 
+
+
             # read in col order from local txt file -- NOTE: THIS EXCLUDES 'case_outcome' COLUMN SINCE TRAINED MODEL DOESN'T TAKE IT AS INPUT
             with open('data/app-data/col_order.txt', 'r') as f:
                 col_order = f.read().splitlines()
@@ -435,6 +438,10 @@ def show_form():
             already_encoded_cols = list(set(form_data_as_model_example.keys()) - set(cols_to_encode))
             if "adjudicating_member" not in already_encoded_cols:
                 already_encoded_cols.append("adjudicating_member")
+
+
+            for col, val in form_data_as_model_example.items():
+                st.write(f"{col}: {val}")
 
             encoded_form_data = []
             for col, val in form_data_as_model_example.items(): # need to do it in this order
@@ -475,7 +482,7 @@ def show_form():
             # sort the results from most to least likely
             st.session_state['model_inference'] = dict(sorted(st.session_state['model_inference'].items(), key=lambda item: item[1], reverse=True))
 
-            st.success("Form submitted successfully and the model has made its predictions! Please navigate to the 'Form Results' tab to view the predictions.")
+            st.success("Form submitted successfully and the model has made its predictions. Please navigate to the 'Form Results' tab to view the results.")
 
             #################################################################################################
 
@@ -489,6 +496,8 @@ def show_results():
         st.write("The model has made predictions based on the information you provided. Here are the results, and how to interpret them:")
         st.write("### Case Outcome Predictions")
 
+        # saves time and resources if this has already been generated
+        # if not st.session_state.get('pdf_text', None):
         for outcome, prob in st.session_state['model_inference'].items():
             st.write(f"* **{outcome}**: {round(prob * 100, 2)}%")
 
@@ -513,6 +522,7 @@ def show_results():
 
         # so the user can download the results as a PDF
         pdf_output = generate_pdf(pdf_text)
+
         st.download_button(
             label="Download PDF",
             data=pdf_output,
