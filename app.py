@@ -134,23 +134,12 @@ def show_form():
     st.markdown("*Please fill out the form below to the best of your ability. If you are unsure about any information, you can leave it blank or select 'Not Stated', or 'Not Applicable'.*")
 
     ### Having default values for continuous cols as mean of each column -- safest to assume if user is unsure
-    continuous_cols = {
-        'children_under_18' : 0, # mean was less than zero (mostly 'not stated')
-        'children_under_14' : 0, # mean was less than zero (mostly 'not stated')
-        'children_under_5' : 0, # mean was less than zero (mostly 'not stated')
-        'tenancy_length' : 0, # user can answer this
-        'monthly_rent' : 700, # mean is ~670 but we'll round up to 700
-        'rental_deposit' : 550, # mean is ~550
-        'post_increase_rent' : 0, # mean from data is ~40 but I don't want to skew the data
+    assumed_values = {
+        'adjudicating_member': "", # assumption because user can't know this
         'total_arrears' : 1000, # median is ~975 but we'll round up to 1000
-        'arrears_duration' : 0, # mean from data is ~1 but we'll say 0 (immediate arrears payment)
-        'payment_amount_post_notice' : 800, # mean is ~838 but we'll round down to 800
-        'total_children' : 0, # mean was less than zero (mostly 'not stated')
-        'household_income' : 0, # mean was more than zero but I don't want to skew anything here so leaving default to zero
-        'payment_plan_length' : 0, # mean was less than zero (mostly 'not stated')
-        'notice_duration' : 0, # mean was less than zero (mostly 'not stated')
-
-        # these values can't be known by the user so we'll assume various values that are the most statistically likely given the data
+        'n4_notice_validity': 'Not Stated', # assumption because user can't know this
+        'hearing_date_present': 'Not Stated', # assumption because user can't know this
+        'decision_date_present': 'Not Stated', # assumption because user can't know this
         'payment_plan_proposed' : "Not Stated", # user can't know this so we'll assume this would be the most common value
         'payment_plan_accepted' : "Not Stated", # user can't know this so we'll assume this would be the most common value
         'payment_plan_length' : "Not Stated", # user can't know this so we'll assume this would be the most common value
@@ -165,7 +154,6 @@ def show_form():
         'rent_increase_date_present' : "Not Stated", # user can't know this so we'll assume this would be the most common value
     }
 
-    
     with st.form(key='case_info_form'):
 
         # encodings of the most common adjudicating members per location (that are not "Not stated") -- this doesn't need to be encoded downstream for model usage
@@ -227,7 +215,7 @@ def show_form():
             sorted(board_to_member_lookup.keys()),
         )
 
-        adj_mem = board_to_member_lookup[board_location]
+        assumed_values['adjudicating_member'] = board_to_member_lookup[board_location]
 
         cat_common_order_1 = ['Yes', 'No', 'Not Stated', 'Not Applicable']
         cat_common_order_2 = ['Not Applicable', 'No', 'Yes', 'Not Stated']
@@ -338,7 +326,7 @@ def show_form():
             # st.success("Form submitted successfully, but don't leave just yet! Please wait until the message.")
             # Collect form data into a dictionary or use as needed
             form_data = {
-                'adjudicating_member': adj_mem, # assumption because user can't know this
+                'adjudicating_member': assumed_values['adjudicating_member'], # assumption because user can't know this
                 'board_location': board_location,
                 'landlord_represented': landlord_represented,
                 'landlord_attended_hearing': landlord_attended_hearing,
@@ -351,8 +339,8 @@ def show_form():
                 'rental_deposit': rental_deposit,
                 'post_increase_rent': post_increase_rent,
                 # 'rent_increase_date': rent_increase_date, # not used by model
-                'rent_increase_date_present': continuous_cols['rent_increase_date_present'], # added in lieu of 'rent_increase_date'
-                'total_arrears': continuous_cols['total_arrears'],
+                'rent_increase_date_present': assumed_values['rent_increase_date_present'], # added in lieu of 'rent_increase_date'
+                'total_arrears': assumed_values['total_arrears'],
                 'arrears_duration': arrears_duration,
                 'payment_amount_post_notice': payment_amount_post_notice,
                 'history_of_arrears': history_of_arrears,
@@ -375,31 +363,28 @@ def show_form():
                 'tenant_job_loss_during_period': tenant_job_loss_during_period,
                 'other_extenuating_circumstances': other_extenuating_circumstances,
                 'payment_plan_proposed': payment_plan_proposed,
-                'payment_plan_accepted': continuous_cols['payment_plan_accepted'],
-                'payment_plan_length': continuous_cols['payment_plan_length'],
+                'payment_plan_accepted': assumed_values['payment_plan_accepted'],
+                'payment_plan_length': assumed_values['payment_plan_length'],
                 'difficulty_finding_housing': difficulty_finding_housing,
                 'reasons_for_housing_difficulty': reasons_for_housing_difficulty,
                 'tenant_given_prior_notice': tenant_given_prior_notice,
                 'notice_duration': notice_duration,
-                'postponement_leads_to_arrears': continuous_cols['postponement_leads_to_arrears'],
-                'n4_notice_validity': 'Not Stated', # assumption because user can't know this
+                'postponement_leads_to_arrears': assumed_values['postponement_leads_to_arrears'],
                 'extracted_applications': extracted_applications,
-                'hearing_date_present': 'Not Stated', # assumption because user can't know this
-                'decision_date_present': 'Not Stated', # assumption because user can't know this
-                'hearing_date_month': continuous_cols['hearing_date_month'],
-                'hearing_date_day': continuous_cols['hearing_date_day'],
-                'hearing_date_year': continuous_cols['hearing_date_year'],
-                'decision_date_month': continuous_cols['decision_date_month'],
-                'decision_date_day': continuous_cols['decision_date_day'],
-                'decision_date_year': continuous_cols['decision_date_year'],
-                'hearing_decision_diff': continuous_cols['hearing_decision_diff'],
-                # 'x_application_present': x_application_present,
+                'n4_notice_validity': assumed_values['n4_notice_validity'],
+                'hearing_date_present': assumed_values['hearing_date_present'],
+                'decision_date_present': assumed_values['decision_date_present'],
+                'hearing_date_month': assumed_values['hearing_date_month'],
+                'hearing_date_day': assumed_values['hearing_date_day'],
+                'hearing_date_year': assumed_values['hearing_date_year'],
+                'decision_date_month': assumed_values['decision_date_month'],
+                'decision_date_day': assumed_values['decision_date_day'],
+                'decision_date_year': assumed_values['decision_date_year'],
+                'hearing_decision_diff': assumed_values['hearing_decision_diff'],
             }
 
             # Save form data to session state
             st.session_state['form_data'] = form_data
-
-
 
             # read in col order from local txt file -- NOTE: THIS EXCLUDES 'case_outcome' COLUMN SINCE TRAINED MODEL DOESN'T TAKE IT AS INPUT
             with open('data/app-data/col_order.txt', 'r') as f:
@@ -439,15 +424,12 @@ def show_form():
             if "adjudicating_member" not in already_encoded_cols:
                 already_encoded_cols.append("adjudicating_member")
 
-
-            for col, val in form_data_as_model_example.items():
-
-                # skip false vals
-                if "__application_present" in col:
-                    if val == "false":
-                        continue
-
-                st.write(f"{col}: {val}")
+            # for col, val in form_data_as_model_example.items():
+            #     # skip false vals
+            #     if "__application_present" in col:
+            #         if val == "false":
+            #             continue
+            #     st.write(f"{col}: {val}")
 
             encoded_form_data = []
             for col, val in form_data_as_model_example.items(): # need to do it in this order
@@ -487,6 +469,20 @@ def show_form():
 
             # sort the results from most to least likely
             st.session_state['model_inference'] = dict(sorted(st.session_state['model_inference'].items(), key=lambda item: item[1], reverse=True))
+
+            """
+            Sample model predictions (for an idea of the classes and format):
+            {
+                'Full Eviction': 0.5,
+                'Dismissal': 0.3,
+                'Conditional Eviction': 0.1,
+                'No Eviction, Payment Plan': 0.05,
+                'Abatement': 0.03,
+                'Relief From Eviction': 0.01,
+                'Rent Adjustment': 0.005,
+                'Postponement': 0.005
+            }
+            """
 
             st.success("Form submitted successfully and the model has made its predictions. Please navigate to the 'Form Results' tab to view the results.")
 
@@ -547,7 +543,7 @@ def show_model_training():
 
     The trained model in this project is a [XGBoost Classifier](https://xgboost.readthedocs.io/en/stable/) model. After testing other feature-based classifiers, including [Logistic Regression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html), [Decision Tree](https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html), and [Random Forest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html), the XGBoost model was chosen for the following reasons:
     1. Simply put, it performed the best. It achieved the highest *scores** in predicting the outcome of the cases in the test set.
-    2. It is a robust model that can handle both categorical and continuous data, with the training data not required linear relationships (unlike a model like a linear regression classifier).
+    2. It is a robust model that can handle both categorical and continuous data, with the training data not required to be linearly related (unlike a model like a Logistic Regression Classifier).
     3. Despite there being more modern model architectures like [Deep Learning Neural Networks](https://en.wikipedia.org/wiki/Deep_learning) and [Transformers](https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)), this model still achieves great performance and is far more [interpretable](https://docs.aws.amazon.com/whitepapers/latest/model-explainability-aws-ai-ml/interpretability-versus-explainability.html). With the ultimate goal of this project being to get insights into the decision-making process of a Landlord-Tenant Board legal case, the trained model had to strike a balance of interpretability and performance.
 
     **See the **Training Results** section below for more details on the definition of 'scores' and 'performance' in the context of this project.*
