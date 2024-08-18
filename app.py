@@ -470,19 +470,19 @@ def show_form():
             # sort the results from most to least likely
             st.session_state['model_inference'] = dict(sorted(st.session_state['model_inference'].items(), key=lambda item: item[1], reverse=True))
 
-            """
-            Sample model predictions (for an idea of the classes and format):
-            {
-                'Full Eviction': 0.5,
-                'Dismissal': 0.3,
-                'Conditional Eviction': 0.1,
-                'No Eviction, Payment Plan': 0.05,
-                'Abatement': 0.03,
-                'Relief From Eviction': 0.01,
-                'Rent Adjustment': 0.005,
-                'Postponement': 0.005
-            }
-            """
+            # """
+            # Sample model predictions (for an idea of the classes and format):
+            # {
+            #     'Full Eviction': 0.5,
+            #     'Dismissal': 0.3,
+            #     'Conditional Eviction': 0.1,
+            #     'No Eviction, Payment Plan': 0.05,
+            #     'Abatement': 0.03,
+            #     'Relief From Eviction': 0.01,
+            #     'Rent Adjustment': 0.005,
+            #     'Postponement': 0.005
+            # }
+            # """
 
             st.success("Form submitted successfully and the model has made its predictions. Please navigate to the 'Form Results' tab to view the results.")
 
