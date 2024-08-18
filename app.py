@@ -441,6 +441,12 @@ def show_form():
 
 
             for col, val in form_data_as_model_example.items():
+
+                # skip false vals
+                if "__application_present" in col:
+                    if val == "false":
+                        continue
+
                 st.write(f"{col}: {val}")
 
             encoded_form_data = []
