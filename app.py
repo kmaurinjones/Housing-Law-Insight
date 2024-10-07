@@ -589,7 +589,6 @@ def show_results():
                     "content": prompt
                 }],
                 max_completion_tokens=4000,
-                temperature=0.7,
             )
 
             response_str = completion.choices[0].message.content.strip()
