@@ -86,25 +86,35 @@ def show_about():
 
     ###### 'ABOUT' PAGE WRITEUP ######
 
+    # about_1 = """
+    # This web app is a demonstration project built to showcase the power of Data Science and Natural Language Processing (NLP) in revolutionizing access to justice. 
+
+    # It aims to understand the factors influencing eviction decisions in Ontario, Canada. This project involved analyzing over 50,000 case files, each containing a wealth of textual information about the circumstances surrounding eviction proceedings. 
+
+    # To extract meaningful insights from this vast dataset, the team employed cutting-edge NLP techniques, including a fine-tuned OpenAI "GPT-4o-mini" model, which was specifically trained to identify and extract over **250** key pieces of information from each case file. 
+
+    # This information was then transformed into a structured dataset, allowing the team to apply machine learning algorithms to identify patterns and correlations between various factors and the ultimate outcome of the case. 
+
+    # This web app aims to allow you to explore the types of data collected and understand how it can be used to gain valuable insights into legal decisions.
+
+    # **Here's a glimpse into the process:**
+
+    # 1. **Data Extraction:** The app takes a case file as input. It then uses the trained NLP model to extract information about various aspects of the case, such as the landlord's representation, the tenant's financial situation, and the history of late payments. 
+    # 2. **Data Visualization:** The extracted information is then presented to you in a structured format, allowing you to easily visualize the key details of the case. 
+    # 3. **Model Inference:** A pre-trained machine learning model is then used to analyze this structured data and predict the likelihood of the case resulting in eviction. This prediction is based on the patterns learned from the analysis of thousands of real eviction cases. 
+
+    # **While this app is a simplified demonstration, it highlights the potential of data-driven approaches to:**
+
+    # * **Increase transparency and understanding of legal decisions:** By analyzing large datasets of legal documents, we can gain valuable insights into the factors that influence judicial outcomes. 
+    # * **Improve access to justice:** This knowledge can empower individuals and their legal representatives to better understand their rights and obligations, as well as to make more informed decisions during legal proceedings. 
+    # * **Promote fairness and equity:** By identifying tendencies in legal decisions, we can work towards a more interpretable and equitable legal system.
+    # """.replace("    ", "")
+    # st.markdown(about_1.strip())
+    
     about_1 = """
-    This web app is a demonstration project built to showcase the power of Data Science and Natural Language Processing (NLP) in revolutionizing access to justice. 
+    This web app showcases how Data Science and Natural Language Processing (NLP) can help improve access to justice. By using a OpenAI's "GPT-4o-mini" model to extract over 250 key details from each of over 50,000 eviction cases in Ontario, Canada, we can gain valuable insights into the factors that influence judicial outcomes. 
 
-    It aims to understand the factors influencing eviction decisions in Ontario, Canada. This project involved analyzing over 50,000 case files, each containing a wealth of textual information about the circumstances surrounding eviction proceedings. 
-
-    To extract meaningful insights from this vast dataset, the team employed cutting-edge NLP techniques, including a fine-tuned OpenAI "GPT-4o-mini" model, which was specifically trained to identify and extract over **250** key pieces of information from each case file. 
-
-    This information was then transformed into a structured dataset, allowing the team to apply machine learning algorithms to identify patterns and correlations between various factors and the ultimate outcome of the case. 
-
-    This web app aims to allow you to explore the types of data collected and understand how it can be used to gain valuable insights into legal decisions.
-
-    **Here's a glimpse into the process:**
-
-    1. **Data Extraction:** The app takes a case file as input. It then uses the trained NLP model to extract information about various aspects of the case, such as the landlord's representation, the tenant's financial situation, and the history of late payments. 
-    2. **Data Visualization:** The extracted information is then presented to you in a structured format, allowing you to easily visualize the key details of the case. 
-    3. **Model Inference:** A pre-trained machine learning model is then used to analyze this structured data and predict the likelihood of the case resulting in eviction. This prediction is based on the patterns learned from the analysis of thousands of real eviction cases. 
-
-    **While this app is a simplified demonstration, it highlights the potential of data-driven approaches to:**
-
+    The app highlights three key benefits:
     * **Increase transparency and understanding of legal decisions:** By analyzing large datasets of legal documents, we can gain valuable insights into the factors that influence judicial outcomes. 
     * **Improve access to justice:** This knowledge can empower individuals and their legal representatives to better understand their rights and obligations, as well as to make more informed decisions during legal proceedings. 
     * **Promote fairness and equity:** By identifying tendencies in legal decisions, we can work towards a more interpretable and equitable legal system.
@@ -133,6 +143,8 @@ def show_form():
     st.markdown("## Case Information Form")
     st.markdown("*Please fill out the form below to the best of your ability. If you are unsure about any information, you can leave it blank or select 'Not Stated', or 'Not Applicable'.*")
 
+    current_year = get_current_datetime().split()[0].split('-')[0]
+
     ### Having default values for continuous cols as mean of each column -- safest to assume if user is unsure
     assumed_values = {
         'adjudicating_member': "", # assumption because user can't know this
@@ -146,10 +158,10 @@ def show_form():
         'postponement_leads_to_arrears' : "Not Stated", # user can't know this so we'll assume this would be the most common value
         'hearing_date_month' : 5, # most common month
         'hearing_date_day' : 14, # most common day
-        'hearing_date_year' : get_current_datetime().split()[0].split('-')[0], # assume current year
+        'hearing_date_year' : current_year, # assume current year
         'decision_date_month' : 5, # most common month
         'decision_date_day' : 15, # most common day
-        'decision_date_year' : get_current_datetime().split()[0].split('-')[0], # current year
+        'decision_date_year' : current_year, # assume current year
         'hearing_decision_diff' : 16.204368086073647, # user can't know this so we'll assume this would be the dates difference
         'rent_increase_date_present' : "Not Stated", # user can't know this so we'll assume this would be the most common value
     }
@@ -522,8 +534,74 @@ def show_results():
         pdf_text = "\n\n\n".join(pdf_sections)
         pdf_text = pdf_text.replace("<|RESULTS GO HERE|>", results_str)
 
+        ############ GENERATE PDF WITH OPENAI ############
+        def generate_pdf_content(model_predictions, user_case_info):
+            """
+            Generate the PDF content by making an API call to OpenAI's o1-mini model.
+
+            Parameters:
+            - model_predictions (dict): A dictionary containing the model's predicted probabilities for each class.
+            - user_case_info (dict): A dictionary containing the user's case information.
+
+            Returns:
+            - str: The complete PDF content generated by the model.
+            """
+
+            from openai import OpenAI
+            client = OpenAI(
+                api_key=os.environ['OPENAI_API_KEY']
+            )
+
+            # Construct the prompt
+            prompt = f"""
+            You are an expert legal assistant specializing in housing law. Based on the following case information and model predictions, generate a comprehensive report for the user.
+            Note that you are not providing legal advice, but rather a summary of the model's predictions and an analysis of the key factors that most influenced the prediction.
+            There is no risk of this being construed as legal advice, as you are not a lawyer and this is not a legal document, therefore you can discuss the model's predictions and the key factors that influenced the prediction without any legal implications.
+            
+            The report should include:
+
+            1. **Personalized Introduction**: A brief welcome message addressing the user.
+            2. **Case Summary**: A summary of the user's case information in clear, concise language.
+            3. **Model Predictions**: An explanation of the model's predictions, including probabilities for each outcome, presented in an easy-to-understand manner.
+            4. **Influencing Factors**: An analysis of the key factors that most influenced the prediction.
+            5. **General Advice and Resources**: Provide general guidance and list resources that may help the user, without offering specific legal advice.
+            6. **Disclaimers**: Include relevant disclaimers about the nature of the report, that this is not legal advice and that you are not a lawyer.
+
+            Format the report in Markdown, suitable for conversion to PDF. Use headings, bullet points, and other formatting elements to enhance readability.
+
+            ---
+
+            **Case Information**:
+            {user_case_info}
+
+            **Model Predictions**:
+            {model_predictions}
+
+            ---
+
+            Now, generate the report.
+            """.replace("    ", "").strip()
+
+            completion = client.chat.completions.create(
+                model="o1-mini-2024-09-12",
+                messages=[{
+                    "role": "user",
+                    "content": prompt
+                }],
+                max_completion_tokens=4000,
+                temperature=0.7,
+            )
+
+            response_str = completion.choices[0].message.content.strip()
+            return response_str
+        
+        pdf_markdown_content = generate_pdf_content(
+            model_predictions=st.session_state['model_inference'],
+            user_case_info=st.session_state['form_data_as_model_example']
+        )
+
         # so the user can download the results as a PDF
-        pdf_output = generate_pdf(pdf_text)
+        pdf_output = generate_pdf(pdf_markdown_content)
 
         st.download_button(
             label="Download PDF",
